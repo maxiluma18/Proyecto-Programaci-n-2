@@ -17,7 +17,7 @@ public interface IAerolinea {
 	* Se registran los clientes de la Aerolínea, compren o no pasaje. 
 	* Cuando un cliente compre un pasaje es un Cliente (pasajero) y queda registrado en el vuelo correspondiente.
     */
-	void registrarCliente(int dni, String nombre, String telefono);	
+	void registrarCliente(int dni, String nombre, String telefono);
 	
 	/**
 	* - 3 
