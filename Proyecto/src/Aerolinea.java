@@ -3,7 +3,7 @@ import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
-public class Aerolinea {
+public class Aerolinea implements IAerolinea {
     private String nombre;
     private String cuit;
     private Map<String, Aeropuerto> aeropuertos;
@@ -23,6 +23,18 @@ public class Aerolinea {
         if (aeropuertos.containsKey(nombre)) {
             throw new RuntimeErrorException(null, "Aeropuerto ya existente");
         }
+        if (nombre == null || nombre.isEmpty()) {
+            throw new RuntimeErrorException(null, "Nombre de aeropuerto no puede ser nulo o vacio");
+        }
+        if (pais == null || pais.isEmpty()) {
+            throw new RuntimeErrorException(null, "el pais no puede ser nulo o vacio");
+        }
+        if (provincia == null || provincia.isEmpty()) {
+            throw new RuntimeErrorException(null, "La provincia no puede ser nulo o vacio");
+        }
+        if (direccion == null || direccion.isEmpty()) {
+            throw new RuntimeErrorException(null, "La direccion no puede ser nulo o vacio");
+        }
         Aeropuerto nuevoAeropuerto = new Aeropuerto(nombre, pais, provincia, direccion);
         aeropuertos.put(nombre, nuevoAeropuerto);
     }
@@ -30,6 +42,15 @@ public class Aerolinea {
     public void registrarCliente(int dni, String nombre, String telefono) {
         if (clientes.containsKey(dni)) {
             throw new RuntimeErrorException(null, "Cliente ya existente");
+        }
+        if (dni <= 0) {
+            throw new IllegalArgumentException("El Dni debe ser positivo");
+        }
+        if (nombre == null || nombre.isEmpty()) {
+            throw new IllegalArgumentException("El dato nombre debe ser valido");
+        }
+        if (telefono == null || telefono.isEmpty()) {
+            throw new IllegalArgumentException("El dato telefono debe ser valido");
         }
         Cliente nuevoCliente = new Cliente(dni, nombre, telefono);
         clientes.put(dni, nuevoCliente);
@@ -48,13 +69,13 @@ public class Aerolinea {
         if (precios.length != 2 || cantAsientos.length != 2) {
             throw new RuntimeException("Los arrays de precios y asientos deben tener longitud 2");
         }
+        // IREP DE LO DEMAS
 
         VueloNacional nuevoVuelo = new VueloNacional(origen, destino, fecha, tripulantes, valorRefrigerio, precios,
                 cantAsientos);
 
-        String codigoVuelo = nuevoVuelo.getCodigo() + "-PUB";
+        String codigoVuelo = nuevoVuelo.getCodigo();
         Vuelos.put(codigoVuelo, nuevoVuelo);
-
         return codigoVuelo;
     }
 
@@ -66,6 +87,7 @@ public class Aerolinea {
         if (precios.length != 3 || cantAsientos.length != 3) {
             throw new RuntimeException("Los arrays de precios y asientos deben tener longitud 2");
         }
+        // IREP DE LO DEMAS
         // agregar mejor irep que este
         if (escalas.length > 0) {
             for (int i = 0; i < escalas.length; i++) {
@@ -80,10 +102,46 @@ public class Aerolinea {
         }
         VueloInternacional nuevoVuelo = new VueloInternacional(origen, destino, fecha, tripulantes, valorRefrigerio,
                 cantRefrigerios, precios, cantAsientos, escalas);
-        String codigoVuelo = nuevoVuelo.getCodigo() + "-PUB";
+        String codigoVuelo = nuevoVuelo.getCodigo();
         Vuelos.put(codigoVuelo, nuevoVuelo);
 
         return codigoVuelo;
+    }
+
+    public String VenderVueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,
+            int dniComprador, int[] acompaniantes) {
+        if (!aeropuertos.containsKey(origen) || !aeropuertos.containsKey(destino)) {
+            throw new RuntimeException("Origen o destino no registrados");
+        }
+        if (acompaniantes.length < 0) {
+            throw new RuntimeErrorException(null, "Error en los datos");
+        }
+        if (!clientes.containsKey(dniComprador)) {
+            throw new RuntimeException("El cliente no esta registrado");
+        }
+        // IREP DE LO DEMAS
+
+        VueloPrivado nuevoVuelo = new VueloPrivado(origen, destino, fecha, tripulantes, precio, dniComprador,
+                acompaniantes);
+        String codigoVuelo = nuevoVuelo.getCodigo();
+        Vuelos.put(codigoVuelo, nuevoVuelo);
+        return codigoVuelo;
+    }
+
+    public Map<Integer, String> asientosDisponibles(String codVuelo) {
+        Vuelo vuelo = Vuelos.get(codVuelo);
+        if (vuelo == null) {
+            throw new RuntimeException("El vuelo no existe");
+        }
+        if (vuelo instanceof VueloInternacional) {
+            VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
+            return vueloInternacional.getAsientosDisponibles();
+        } else if (vuelo instanceof VueloNacional) {
+            VueloNacional vueloNacional = (VueloNacional) vuelo;
+            return vueloNacional.getAsientosDisponibles();
+        } else {
+            throw new RuntimeException("El vuelo no tiene acceso a los asientos");
+        }
     }
 
 }
