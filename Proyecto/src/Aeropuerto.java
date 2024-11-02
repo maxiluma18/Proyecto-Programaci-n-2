@@ -24,4 +24,8 @@ public class Aeropuerto {
         }
         return true;
     }
+
+    public String getPais() {
+        return pais;
+    }
 }
