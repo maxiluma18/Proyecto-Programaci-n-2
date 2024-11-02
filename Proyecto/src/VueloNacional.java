@@ -4,38 +4,12 @@ import java.util.Map;
 public class VueloNacional extends VueloPublico {
     private double valorRefrigerio;
     private double[] precios;
-    private int[][] cantAsientos;
-    private Map<Integer, Cliente> pasajeros;
 
     public VueloNacional(String origen, String destino, String fecha, int tripulantes,
             double valorRefrigerio, double[] precios, int[] cantAsientos) {
-        super(origen, destino, fecha, tripulantes);
+        super(origen, destino, fecha, tripulantes, cantAsientos);
         this.valorRefrigerio = valorRefrigerio;
-        this.precios = agregarPrecios(precios);
-        this.cantAsientos = agregarAsientos(cantAsientos);
-        this.pasajeros = new HashMap<>();
-    }
-
-    private double[] agregarPrecios(double[] precios) {
-        double[] nuevosPrecios = new double[2];
-        nuevosPrecios[0] = precios[0];
-        nuevosPrecios[1] = precios[1];
-        return nuevosPrecios;
-    }
-
-    private int[][] agregarAsientos(int[] cantAsientos) {
-        int[][] nuevosAsientos = new int[2][];
-        nuevosAsientos[0] = new int[cantAsientos[0]];
-        nuevosAsientos[1] = new int[cantAsientos[1]];
-
-        for (int i = 0; i < cantAsientos[0]; i++) {
-            nuevosAsientos[0][i] = 0;
-        }
-        for (int i = 0; i < cantAsientos[1]; i++) {
-            nuevosAsientos[1][i] = 0;
-        }
-
-        return nuevosAsientos;
+        this.precios = precios;
     }
 
     public Map<Integer, String> getAsientosDisponibles() {
@@ -52,6 +26,21 @@ public class VueloNacional extends VueloPublico {
             }
         }
         return asientos;
+    }
+
+    @Override
+    public int venderPasaje(int dni, int nroAsiento, boolean aOcupar) {
+        if (nroAsiento <= 0)
+            return 0;
+
+        // traer el codigopasajes de de vuelopublico
+        int codPasaje = super.getCodigoPasaje();
+
+        if (ocuparAsiento(dni, nroAsiento, codPasaje, aOcupar)) {
+            super.setCodigoPasaje(1);
+            return codPasaje;
+        }
+        return 0;
     }
 
 }

@@ -113,6 +113,10 @@ public class Aerolinea implements IAerolinea {
         if (!aeropuertos.containsKey(origen) || !aeropuertos.containsKey(destino)) {
             throw new RuntimeException("Origen o destino no registrados");
         }
+        if (!aeropuertos.get(origen).getPais().equals("Argentina") ||
+                !aeropuertos.get(destino).getPais().equals("Argentina")) {
+            throw new RuntimeException("Los aeropuertos deben ser nacionales");
+        }
         if (acompaniantes.length < 0) {
             throw new RuntimeErrorException(null, "Error en los datos");
         }
@@ -135,6 +139,7 @@ public class Aerolinea implements IAerolinea {
         }
         if (vuelo instanceof VueloInternacional) {
             VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
+            System.out.println(vueloInternacional.getAsientosDisponibles());
             return vueloInternacional.getAsientosDisponibles();
         } else if (vuelo instanceof VueloNacional) {
             VueloNacional vueloNacional = (VueloNacional) vuelo;
@@ -142,6 +147,60 @@ public class Aerolinea implements IAerolinea {
         } else {
             throw new RuntimeException("El vuelo no tiene acceso a los asientos");
         }
+    }
+
+    public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) {
+        if (clientes.get(dni) == null) {
+            throw new RuntimeException("El cliente no está registrado");
+        }
+        if (clientes.get(dni).esPasajero() == true) {
+            System.out.println(clientes.get(dni).esPasajero());
+            if (aOcupar == true) {
+                throw new RuntimeException("El cliente ya tiene asiento designado");
+            }
+        }
+        Vuelo vuelo = Vuelos.get(codVuelo);
+        if (vuelo == null) {
+            throw new RuntimeException("El vuelo no existe");
+        }
+        int resultado;
+        if (vuelo instanceof VueloInternacional) {
+            VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
+            resultado = vueloInternacional.venderPasaje(dni, nroAsiento, aOcupar);
+            if (resultado <= 0) {
+                throw new RuntimeException("Hubo un error en la designación del asiento");
+            }
+            if (clientes.get(dni).esPasajero() == false && aOcupar == true) {
+                clientes.get(dni).cambiarEstado(true);
+            } else if (aOcupar == false && clientes.get(dni).esPasajero() == false) {
+                clientes.get(dni).cambiarEstado(false);
+            } else if (aOcupar == false && clientes.get(dni).esPasajero() == true) {
+                clientes.get(dni).cambiarEstado(false);
+            } else {
+                throw new RuntimeException("Hubo un error en la designación del asiento");
+            }
+
+        } else if (vuelo instanceof VueloNacional) {
+            VueloNacional vueloNacional = (VueloNacional) vuelo;
+            resultado = vueloNacional.venderPasaje(dni, nroAsiento, aOcupar);
+            if (resultado <= 0) {
+                throw new RuntimeException("Hubo un error en la designación del asiento");
+            }
+            if (clientes.get(dni).esPasajero() == false && aOcupar == true) {
+                clientes.get(dni).cambiarEstado(true);
+            } else if (aOcupar == false && clientes.get(dni).esPasajero() == false) {
+                clientes.get(dni).cambiarEstado(false);
+            } else if (aOcupar == false && clientes.get(dni).esPasajero() == true) {
+                clientes.get(dni).cambiarEstado(false);
+            } else {
+                throw new RuntimeException("Hubo un error en la designación del asiento");
+            }
+
+        } else {
+            throw new RuntimeException("El vuelo no forma parte de las clases definidas");
+        }
+
+        return resultado;
     }
 
 }

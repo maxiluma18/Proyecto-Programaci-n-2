@@ -14,6 +14,17 @@ public class VueloPrivado extends Vuelo {
         this.dniComprador = dniComprador;
         this.acompaniantes = acompaniantes;
         this.codigo = generarCodigoVuelo() + "-PRI";
+        this.cantJets = cantJets();
+    }
+
+    private int cantJets() {
+        int cantidad = acompaniantes.length;
+        int jets = cantidad / cantidadPasajerosPorJet;
+        if (cantidad % cantidadPasajerosPorJet > 0) {
+            jets++;
+        }
+        System.out.println(jets);
+        return jets;
     }
 
     private static String generarCodigoVuelo() {

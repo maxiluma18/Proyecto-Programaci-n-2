@@ -17,8 +17,8 @@ public class Cliente {
         return this.esPasajero;
     }
 
-    public void cambiarEstado() {
-        this.esPasajero = !this.esPasajero;
+    public void cambiarEstado(boolean pasajero) {
+        this.esPasajero = pasajero;
     }
 
     public String getNombre() {
