@@ -1,29 +1,25 @@
+import javax.management.RuntimeErrorException;
+
 public class Cliente {
-    int dni;
-    String nombre;
-    String telefono;
+    private int dni;
+    private String nombre;
+    private String telefono;
 
-    //constructor
-    public Cliente(int dni, String nombre, String telefono){
-        this.dni = dni;
-        this.nombre = nombre;
-        this.telefono = telefono;
-    }
-    public void registrarse(int dni, String nombre, String telefono){
-        if (esCliente(dni)){
-            System.out.println(dni + " ya esta registrado el dni de este cliente");
+    public Cliente(int dni, String nombre, String telefono) {
+        if (validacion(dni, nombre, telefono)) {
+            this.dni = dni;
+            this.nombre = nombre;
+            this.telefono = telefono;
+        } else {
+            throw new RuntimeErrorException(null, "Error en la validacion");
         }
-        Cliente nuevoCliente = new Cliente(dni, nombre, telefono);
-        clientes.add(nuevoCliente);
-        System.out.println(nuevoCliente + " registado");
     }
 
-    public boolean esCliente(int dni){
-        for(Cliente c: this.clientes){
-            if(c.dni == dni){
-                return true;
-            }
+    // agregar validacion e irep con las 4 variables
+    public boolean validacion(int dni, String nombre, String telefono) {
+        if (dni <= 0 || nombre.isEmpty() || telefono.isEmpty()) {
+            return false;
         }
-        return false;
+        return true;
     }
 }
