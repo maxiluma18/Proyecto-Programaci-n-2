@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +73,9 @@ public class Aerolinea implements IAerolinea {
         if (precios.length != 2 || cantAsientos.length != 2) {
             throw new RuntimeException("Los arrays de precios y asientos deben tener longitud 2");
         }
+        if (!fechaValida(fecha)) {
+            throw new RuntimeErrorException(null, "Fecha invalida");
+        }
         // IREP DE LO DEMAS
 
         VueloNacional nuevoVuelo = new VueloNacional(origen, destino, fecha, tripulantes, valorRefrigerio, precios,
@@ -87,7 +92,10 @@ public class Aerolinea implements IAerolinea {
             throw new RuntimeException("Origen o destino no registrados");
         }
         if (precios.length != 3 || cantAsientos.length != 3) {
-            throw new RuntimeException("Los arrays de precios y asientos deben tener longitud 2");
+            throw new RuntimeException("Los arrays de precios y asientos deben tener longitud 3");
+        }
+        if (!fechaValida(fecha)) {
+            throw new RuntimeErrorException(null, "Fecha invalida");
         }
         // IREP DE LO DEMAS
         // agregar mejor irep que este
@@ -120,7 +128,15 @@ public class Aerolinea implements IAerolinea {
             throw new RuntimeException("Los aeropuertos deben ser nacionales");
         }
         if (acompaniantes.length < 0) {
-            throw new RuntimeErrorException(null, "Error en los datos");
+            throw new RuntimeErrorException(null, "Error en los acompañantes");
+        }
+        for (int i = 1; i < acompaniantes.length; i++) {
+            if (!clientes.containsKey(acompaniantes[i])) {
+                throw new RuntimeErrorException(null, "Error en los acompañantes, inexistentes o datos invalidos");
+            }
+        }
+        if (!fechaValida(fecha)) {
+            throw new RuntimeErrorException(null, "Fecha invalida");
         }
         if (!clientes.containsKey(dniComprador)) {
             throw new RuntimeException("El cliente no esta registrado");
@@ -141,7 +157,6 @@ public class Aerolinea implements IAerolinea {
         }
         if (vuelo instanceof VueloInternacional) {
             VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
-            System.out.println(vueloInternacional.getAsientosDisponibles());
             return vueloInternacional.getAsientosDisponibles();
         } else if (vuelo instanceof VueloNacional) {
             VueloNacional vueloNacional = (VueloNacional) vuelo;
@@ -156,7 +171,6 @@ public class Aerolinea implements IAerolinea {
             throw new RuntimeException("El cliente no está registrado");
         }
         if (clientes.get(dni).esPasajero() == true) {
-            System.out.println(clientes.get(dni).esPasajero());
             if (aOcupar == true) {
                 throw new RuntimeException("El cliente ya tiene asiento designado");
             }
@@ -177,7 +191,7 @@ public class Aerolinea implements IAerolinea {
             } else if (aOcupar == false && clientes.get(dni).esPasajero() == false) {
                 clientes.get(dni).cambiarEstado(false);
             } else if (aOcupar == false && clientes.get(dni).esPasajero() == true) {
-                clientes.get(dni).cambiarEstado(false);
+                clientes.get(dni).cambiarEstado(true);
             } else {
                 throw new RuntimeException("Hubo un error en la designación del asiento");
             }
@@ -193,7 +207,7 @@ public class Aerolinea implements IAerolinea {
             } else if (aOcupar == false && clientes.get(dni).esPasajero() == false) {
                 clientes.get(dni).cambiarEstado(false);
             } else if (aOcupar == false && clientes.get(dni).esPasajero() == true) {
-                clientes.get(dni).cambiarEstado(false);
+                clientes.get(dni).cambiarEstado(true);
             } else {
                 throw new RuntimeException("Hubo un error en la designación del asiento");
             }
@@ -229,9 +243,6 @@ public class Aerolinea implements IAerolinea {
     }
 
     public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
-        // * Se borra el pasaje y se libera el lugar para que pueda comprarlo otro
-        // * cliente.
-        // * IMPORTANTE: Se debe resolver en O(1).
         Cliente cl = clientes.get(dni);
         if (cl == null) {
             throw new RuntimeException("El cliente no está registrado");
@@ -263,5 +274,89 @@ public class Aerolinea implements IAerolinea {
         } else {
             throw new RuntimeException("El pasaje no existe o no se tiene acceso");
         }
+    }
+
+    public List<String> cancelarVuelo(String codVuelo) {
+        List<String> listaPasajerosReprogramados = new ArrayList<>();
+        Vuelo vuelo = Vuelos.get(codVuelo);
+
+        if (vuelo == null) {
+            throw new RuntimeException("El vuelo no existe");
+        }
+
+        if (!(vuelo instanceof VueloPublico)) {
+            throw new RuntimeException("No se puede cancelar un vuelo privado");
+        }
+
+        VueloPublico vueloPublico = (VueloPublico) vuelo;
+        Map<Integer, Pasaje> pasajerosVuelo = new HashMap<>(vueloPublico.getPasajeros());
+        boolean encontroVueloValido = false;
+        for (Vuelo v : new ArrayList<>(Vuelos.values())) {
+            if (v instanceof VueloPublico) {
+                VueloPublico vueloPublicoNuevo = (VueloPublico) v;
+                if (vueloPublicoNuevo != vueloPublico &&
+                        vueloPublicoNuevo.getOrigen().equals(vueloPublico.getOrigen()) &&
+                        vueloPublicoNuevo.getDestino().equals(vueloPublico.getDestino()) &&
+                        vueloPublicoNuevo.fechaValida(vueloPublico.getFecha())) {
+                    encontroVueloValido = true;
+                    for (Pasaje p : pasajerosVuelo.values()) {
+                        String telefonoCliente = clientes.get(p.getDni()).getTelefono();
+                        String nombreCliente = clientes.get(p.getDni()).getNombre();
+                        String codVueloNuevo = vueloPublicoNuevo.getCodigo();
+
+                        if (vueloPublicoNuevo.asignarAsiento(p.getDni(),
+                                p.getNroAsiento(),
+                                p.getClase(),
+                                p.getOcupado()) > 0) {
+                            agregarPasajero(listaPasajerosReprogramados,
+                                    p.getDni(),
+                                    nombreCliente,
+                                    telefonoCliente,
+                                    codVueloNuevo);
+                        } else {
+                            agregarPasajero(listaPasajerosReprogramados,
+                                    p.getDni(),
+                                    nombreCliente,
+                                    telefonoCliente,
+                                    "CANCELADO");
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!encontroVueloValido) {
+            for (Pasaje p : pasajerosVuelo.values()) {
+                String telefonoCliente = clientes.get(p.getDni()).getTelefono();
+                String nombreCliente = clientes.get(p.getDni()).getNombre();
+                agregarPasajero(listaPasajerosReprogramados,
+                        p.getDni(),
+                        nombreCliente,
+                        telefonoCliente,
+                        "CANCELADO");
+            }
+        }
+        Vuelos.remove(codVuelo);
+
+        return listaPasajerosReprogramados;
+    }
+
+    // *Funciones Auxiliares---------------------
+    public void agregarPasajero(List<String> lista, int dni, String nombre,
+            String telefono, String codVuelo) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dni).append(" - ")
+                .append(nombre).append(" - ")
+                .append(telefono).append(" - ")
+                .append(codVuelo);
+        lista.add(sb.toString());
+    }
+
+    public boolean fechaValida(String fecha) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/uuuu");
+        LocalDate fechaVuelo = LocalDate.parse(fecha, formatter);
+        LocalDate fechaHoy = LocalDate.now();
+
+        return fechaVuelo.isAfter(fechaHoy);
     }
 }

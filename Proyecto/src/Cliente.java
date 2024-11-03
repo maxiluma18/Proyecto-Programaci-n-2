@@ -20,6 +20,10 @@ public class Cliente {
         this.esPasajero = pasajero;
     }
 
+    public String getTelefono() {
+        return telefono;
+    }
+
     public String getNombre() {
         return this.nombre;
     }

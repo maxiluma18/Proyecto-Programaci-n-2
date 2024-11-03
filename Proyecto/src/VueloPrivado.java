@@ -6,6 +6,7 @@ public class VueloPrivado extends Vuelo {
     private String codigo;
     private int cantidadPasajerosPorJet = 15;
     private int cantJets;
+    private double recaudacionTotal;
 
     public VueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,
             int dniComprador, int[] acompaniantes) {
@@ -15,6 +16,7 @@ public class VueloPrivado extends Vuelo {
         this.acompaniantes = acompaniantes;
         this.codigo = generarCodigoVuelo() + "-PRI";
         this.cantJets = cantJets();
+        this.recaudacionTotal = calcularRecaudacionTotal();
     }
 
     private int cantJets() {
@@ -23,8 +25,12 @@ public class VueloPrivado extends Vuelo {
         if (cantidad % cantidadPasajerosPorJet > 0) {
             jets++;
         }
-        System.out.println(jets);
         return jets;
+    }
+
+    private double calcularRecaudacionTotal() {
+        double precioBase = precio * cantJets;
+        return precioBase * 1.3;
     }
 
     private static String generarCodigoVuelo() {
@@ -34,5 +40,25 @@ public class VueloPrivado extends Vuelo {
 
     public String getCodigo() {
         return codigo;
+    }
+
+    public int getDniComprador() {
+        return dniComprador;
+    }
+
+    public int[] getAcompaniantes() {
+        return acompaniantes;
+    }
+
+    public int getTotalPasajeros() {
+        return acompaniantes.length + 1;
+    }
+
+    public double getRecaudacionTotal() {
+        return recaudacionTotal;
+    }
+
+    public int getCantJets() {
+        return cantJets;
     }
 }

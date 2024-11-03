@@ -25,6 +25,10 @@ public class Vuelo {
         return destino;
     }
 
+    protected String getFecha() {
+        return fecha;
+    }
+
     public boolean fechaValida(String fecha) {
         DateTimeFormatter formatters = DateTimeFormatter.ofPattern("d/MM/uuuu");
         LocalDate fechaParametro = LocalDate.parse(fecha, formatters);
