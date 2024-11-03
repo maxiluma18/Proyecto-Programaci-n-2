@@ -3,12 +3,16 @@ public class Pasaje {
     private int nroAsiento;
     private String clase;
     private boolean ocupado;
+    private String codVuelo;
+    private int codPasaje;
 
-    public Pasaje(int dni, int nroAsiento, String clase, boolean ocupado) {
+    public Pasaje(int dni, int nroAsiento, String clase, boolean ocupado, String codVuelo, int codPasaje) {
         this.dni = dni;
         this.nroAsiento = nroAsiento;
         this.clase = clase;
         this.ocupado = ocupado;
+        this.codVuelo = codVuelo;
+        this.codPasaje = codPasaje;
     }
 
     public int getDni() {
@@ -25,5 +29,13 @@ public class Pasaje {
 
     public boolean getOcupado() {
         return ocupado;
+    }
+
+    public String getcodVuelo() {
+        return codVuelo;
+    }
+
+    public int getCodPasaje() {
+        return codPasaje;
     }
 }

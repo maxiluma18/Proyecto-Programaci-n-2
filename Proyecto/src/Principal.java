@@ -1,4 +1,3 @@
-
 import java.util.List;
 import java.util.Map;
 
@@ -70,25 +69,21 @@ public class Principal {
                 // System.out.println("Detalle del vuelo internacional: " +
                 // detalleVueloInternacional);
 
-                // // Mostrar asientos disponibles de un vuelo
-                // Map<Integer, String> asientosDisponibles =
-                // aerolinea.asientosDisponibles(codVueloNacional);
-                // System.out.println(
-                // "Asientos disponibles para el vuelo " + codVueloNacional + ": " +
-                // asientosDisponibles);
+                // Mostrar asientos disponibles de un vuelo
+                Map<Integer, String> asientosDisponibles = aerolinea.asientosDisponibles(codVueloNacional);
+                System.out.println(
+                                "Asientos disponibles para el vuelo " + codVueloNacional + ": " +
+                                                asientosDisponibles);
 
-                // // Cancelar un pasaje
-                // aerolinea.cancelarPasaje(12345678, codVueloNacional, 5);
-                // System.out.println("Pasaje 1 cancelado. Asientos disponibles tras la
-                // cancelación: "
-                // + aerolinea.asientosDisponibles(codVueloNacional));
+                // Cancelar un pasaje
+                aerolinea.cancelarPasaje(12345678, codVueloNacional, 5);
+                System.out.println("Pasaje 1 cancelado. Asientos disponibles tras la cancelación: "
+                                + aerolinea.asientosDisponibles(codVueloNacional));
 
-                // // Consultar vuelos similares
-                // List<String> vuelosSimilares =
-                // aerolinea.consultarVuelosSimilares("Aeroparque", "Bariloche",
-                // "15/11/2024");
-                // System.out.println("Vuelos similares al 15/11/2024 de Aeroparque a Bariloche:
-                // " + vuelosSimilares);
+                // Consultar vuelos similares
+                List<String> vuelosSimilares = aerolinea.consultarVuelosSimilares("Aeroparque", "Bariloche",
+                                "15/11/2024");
+                System.out.println("Vuelos similares al 15/11/2024 de Aeroparque a Bariloche: " + vuelosSimilares);
 
                 // >>>>>>>> simulacion vuelo privado
                 // Registrar cliente principal que contratará el vuelo privado

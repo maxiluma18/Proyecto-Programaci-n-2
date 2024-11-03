@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.management.RuntimeErrorException;
@@ -166,7 +168,7 @@ public class Aerolinea implements IAerolinea {
         int resultado;
         if (vuelo instanceof VueloInternacional) {
             VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
-            resultado = vueloInternacional.venderPasaje(dni, nroAsiento, aOcupar);
+            resultado = vueloInternacional.venderPasaje(dni, nroAsiento, aOcupar, codVuelo);
             if (resultado <= 0) {
                 throw new RuntimeException("Hubo un error en la designación del asiento");
             }
@@ -182,7 +184,7 @@ public class Aerolinea implements IAerolinea {
 
         } else if (vuelo instanceof VueloNacional) {
             VueloNacional vueloNacional = (VueloNacional) vuelo;
-            resultado = vueloNacional.venderPasaje(dni, nroAsiento, aOcupar);
+            resultado = vueloNacional.venderPasaje(dni, nroAsiento, aOcupar, codVuelo);
             if (resultado <= 0) {
                 throw new RuntimeException("Hubo un error en la designación del asiento");
             }
@@ -203,4 +205,63 @@ public class Aerolinea implements IAerolinea {
         return resultado;
     }
 
+    public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) {
+        List<String> resultado = new ArrayList<>();
+        for (Vuelo vuelo : Vuelos.values()) {
+            if (vuelo instanceof VueloInternacional) {
+                VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
+
+                if (vueloInternacional.getOrigen().equals(origen) &&
+                        vueloInternacional.getDestino().equals(destino) && vueloInternacional.fechaValida(Fecha)) {
+                    resultado.add(vueloInternacional.toString());
+                }
+            } else if (vuelo instanceof VueloNacional) {
+                VueloNacional vueloNacional = (VueloNacional) vuelo;
+                if (vueloNacional.getOrigen().equals(origen) && vueloNacional.getDestino().equals(destino)
+                        && vueloNacional.fechaValida(Fecha)) {
+                    System.out.println(vueloNacional.toString());
+                    resultado.add(vueloNacional.toString());
+                }
+            }
+
+        }
+        return resultado;
+    }
+
+    public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
+        // * Se borra el pasaje y se libera el lugar para que pueda comprarlo otro
+        // * cliente.
+        // * IMPORTANTE: Se debe resolver en O(1).
+        Cliente cl = clientes.get(dni);
+        if (cl == null) {
+            throw new RuntimeException("El cliente no está registrado");
+        }
+        Vuelo v = Vuelos.get(codVuelo);
+        if (v == null) {
+            throw new RuntimeException("El vuelo no existe");
+        }
+        if (v instanceof VueloInternacional) {
+            VueloInternacional vueloInternacional = (VueloInternacional) v;
+            if (vueloInternacional.tienePasaje(dni, nroAsiento)) {
+                vueloInternacional.cancelarPasaje(dni, nroAsiento);
+                if (cl.esPasajero()) {
+                    cl.cambiarEstado(false);
+                }
+            } else {
+                throw new RuntimeException("El pasaje no existe");
+            }
+        } else if (v instanceof VueloNacional) {
+            VueloNacional vueloNacional = (VueloNacional) v;
+            if (vueloNacional.tienePasaje(dni, nroAsiento)) {
+                vueloNacional.cancelarPasaje(dni, nroAsiento);
+                if (cl.esPasajero()) {
+                    cl.cambiarEstado(false);
+                }
+            } else {
+                throw new RuntimeException("El pasaje no existe");
+            }
+        } else {
+            throw new RuntimeException("El pasaje no existe o no se tiene acceso");
+        }
+    }
 }

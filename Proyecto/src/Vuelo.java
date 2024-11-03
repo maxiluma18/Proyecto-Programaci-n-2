@@ -1,3 +1,7 @@
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class Vuelo {
     private String origen;
     private String destino;
@@ -11,6 +15,23 @@ public class Vuelo {
         this.fecha = fecha;
         this.tripulantes = tripulantes;
 
+    }
+
+    public String getOrigen() {
+        return origen;
+    }
+
+    public String getDestino() {
+        return destino;
+    }
+
+    public boolean fechaValida(String fecha) {
+        DateTimeFormatter formatters = DateTimeFormatter.ofPattern("d/MM/uuuu");
+        LocalDate fechaParametro = LocalDate.parse(fecha, formatters);
+        LocalDate fechaVuelo = LocalDate.parse(this.fecha, formatters);
+        LocalDate fechaMas7Dias = fechaParametro.plusDays(7);
+
+        return !fechaVuelo.isBefore(fechaParametro) && !fechaVuelo.isAfter(fechaMas7Dias);
     }
 
 }

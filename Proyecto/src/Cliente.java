@@ -1,4 +1,3 @@
-import javax.management.RuntimeErrorException;
 
 public class Cliente {
     private int dni;
@@ -24,4 +23,5 @@ public class Cliente {
     public String getNombre() {
         return this.nombre;
     }
+
 }

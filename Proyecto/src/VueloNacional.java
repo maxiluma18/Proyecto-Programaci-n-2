@@ -29,15 +29,15 @@ public class VueloNacional extends VueloPublico {
     }
 
     @Override
-    public int venderPasaje(int dni, int nroAsiento, boolean aOcupar) {
+    public int venderPasaje(int dni, int nroAsiento, boolean aOcupar, String codVuelo) {
         if (nroAsiento <= 0)
             return 0;
-
-        // traer el codigopasajes de de vuelopublico
-        int codPasaje = super.getCodigoPasaje();
-
-        if (ocuparAsiento(dni, nroAsiento, codPasaje, aOcupar)) {
-            super.setCodigoPasaje(1);
+        int totalAsientos = cantAsientos[0].length + cantAsientos[1].length;
+        if (pasajeros.size() >= totalAsientos - 1) {
+            return 0;
+        }
+        int codPasaje = codigoPasajeIncremental++;
+        if (ocuparAsiento(dni, nroAsiento, codPasaje, aOcupar, codVuelo)) {
             return codPasaje;
         }
         return 0;
