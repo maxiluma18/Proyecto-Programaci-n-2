@@ -14,7 +14,7 @@ public class Aeropuerto {
         this.direccion = direccion;
 
     }
-
+    //GETTERS
     public String getPais() {
         return pais;
     }

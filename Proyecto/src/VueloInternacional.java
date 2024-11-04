@@ -52,10 +52,6 @@ public class VueloInternacional extends VueloPublico {
         }
     }
 
-    public String[] getEscalas() {
-        return this.escalas;
-    }
-
     @Override
     protected boolean ocuparAsiento(int dni, int nroAsiento, int codPasaje, boolean aOcupar, String codVuelo) {
         if (nroAsiento <= cantAsientos[0].length) {
@@ -118,7 +114,13 @@ public class VueloInternacional extends VueloPublico {
             throw new RuntimeErrorException(null, "No existe el asiento");
         }
     }
-
+    //GETTERS
+    public String[] getEscalas() {
+        return this.escalas;
+    }
+    public String getTipoVuelo(){
+        return "INTERNACIONAL";
+    }
     public Map<Integer, String> getAsientosDisponibles() {
         Map<Integer, String> asientos = new HashMap<>();
         for (int i = 0; i < cantAsientos[0].length; i++) {
@@ -140,5 +142,4 @@ public class VueloInternacional extends VueloPublico {
         }
         return asientos;
     }
-
 }

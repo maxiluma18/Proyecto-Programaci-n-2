@@ -6,7 +6,6 @@ public class Cliente {
     private Boolean esPasajero = false;
 
     public Cliente(int dni, String nombre, String telefono) {
-
         this.dni = dni;
         this.nombre = nombre;
         this.telefono = telefono;
@@ -19,11 +18,10 @@ public class Cliente {
     public void cambiarEstado(boolean pasajero) {
         this.esPasajero = pasajero;
     }
-
+    //GETTERS
     public String getTelefono() {
         return telefono;
     }
-
     public String getNombre() {
         return this.nombre;
     }

@@ -14,7 +14,7 @@ public class Pasaje {
         this.codVuelo = codVuelo;
         this.codPasaje = codPasaje;
     }
-
+    //GETTERS
     public int getDni() {
         return dni;
     }
