@@ -8,6 +8,7 @@ public class VueloInternacional extends VueloPublico {
     private double valorRefrigerio;
     private int cantRefrigerios;
     private String[] escalas;
+    
 
     public VueloInternacional(String origen, String destino, String fecha, int tripulantes,
             double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos,
@@ -21,6 +22,7 @@ public class VueloInternacional extends VueloPublico {
         this.cantAsientos[0] = new int[cantAsientos[0]];
         this.cantAsientos[1] = new int[cantAsientos[1]];
         this.cantAsientos[2] = new int[cantAsientos[2]];
+        
     }
 
     @Override
@@ -38,6 +40,7 @@ public class VueloInternacional extends VueloPublico {
         if (ocuparAsiento(dni, nroAsiento, codPasaje, aOcupar, codVuelo)) {
             double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
             actualizarRecaudacion(precioPasaje);
+
             return codPasaje;
         }
         return 0;

@@ -14,12 +14,14 @@ public abstract class VueloPublico extends Vuelo {
     private double recaudacionTotal;
     private static int contadorVuelos = 0;
     private String codigo;
+    private Map<String, Double> recaudacionPorDestino;
 
     public VueloPublico(String origen, String destino, String fecha, int tripulantes, int[] cantAsientos) {
         super(origen, destino, fecha, tripulantes);
         this.codigo = generarCodigoVuelo() + "-PUB";
         this.pasajerosPorDNI = new HashMap<>();
         this.recaudacionTotal = 0;
+        this.recaudacionPorDestino = new HashMap<>();
     }
 
     protected double calcularPrecioPasaje(String clase) {
@@ -36,6 +38,10 @@ public abstract class VueloPublico extends Vuelo {
 
     protected void actualizarRecaudacion(double monto) {
         this.recaudacionTotal += monto;
+        
+    }
+    protected void recaudacionDestino(String destino, double recaudacionTotal){
+        recaudacionPorDestino.put(destino, recaudacionTotal);
     }
 
     private static String generarCodigoVuelo() {
@@ -56,7 +62,7 @@ public abstract class VueloPublico extends Vuelo {
         if (ocuparAsiento(dni, nroAsiento, codPasaje, aOcupar, codVuelo)) {
             return codPasaje;
         }
-
+        
         return 0;
     }
 
@@ -84,7 +90,6 @@ public abstract class VueloPublico extends Vuelo {
     }
 
     public boolean tienePasaje(int dni) {
-
         return pasajerosPorDNI.containsKey(dni);
     }
 
@@ -167,9 +172,11 @@ public abstract class VueloPublico extends Vuelo {
     }
     public double getRecaudacionTotal() {
         return recaudacionTotal;
+        
+
     }
     public String getCodigo() {
         return codigo;
     }
-
+    
 }
