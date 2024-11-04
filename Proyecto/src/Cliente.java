@@ -1,4 +1,3 @@
-import javax.management.RuntimeErrorException;
 
 public class Cliente {
     private int dni;
@@ -16,11 +15,15 @@ public class Cliente {
         return this.esPasajero;
     }
 
-    public void cambiarEstado() {
-        this.esPasajero = !this.esPasajero;
+    public void cambiarEstado(boolean pasajero) {
+        this.esPasajero = pasajero;
     }
-
+    //GETTERS
+    public String getTelefono() {
+        return telefono;
+    }
     public String getNombre() {
         return this.nombre;
     }
+
 }

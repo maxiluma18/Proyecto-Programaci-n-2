@@ -1,4 +1,3 @@
-
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +52,8 @@ public class Principal {
 
                 // Vender pasajes
                 int codPasaje1 = aerolinea.venderPasaje(12345678, codVueloNacional, 5, true);
-                int codPasaje2 = aerolinea.venderPasaje(87654321, codVueloInternacional, 1, true);
+                int codPasaje2 = aerolinea.venderPasaje(87654321, codVueloInternacional, 1,
+                                false);
 
                 // Mostrar estado del sistema
                 System.out.println("===== ESTADO DEL SISTEMA =====");
@@ -67,12 +67,14 @@ public class Principal {
                 System.out.println("Detalle del vuelo nacional: " + detalleVueloNacional);
 
                 String detalleVueloInternacional = aerolinea.detalleDeVuelo(codVueloInternacional);
-                System.out.println("Detalle del vuelo internacional: " + detalleVueloInternacional);
+                System.out.println("Detalle del vuelo internacional: " +
+                                detalleVueloInternacional);
 
                 // Mostrar asientos disponibles de un vuelo
                 Map<Integer, String> asientosDisponibles = aerolinea.asientosDisponibles(codVueloNacional);
                 System.out.println(
-                                "Asientos disponibles para el vuelo " + codVueloNacional + ": " + asientosDisponibles);
+                                "Asientos disponibles para el vuelo " + codVueloNacional + ": " +
+                                                asientosDisponibles);
 
                 // Cancelar un pasaje
                 aerolinea.cancelarPasaje(12345678, codVueloNacional, 5);
@@ -107,7 +109,8 @@ public class Principal {
 
                 // Detalle del vuelo privado
                 String detalleVueloPrivado = aerolinea.detalleDeVuelo(codVueloPrivado);
-                System.out.println("Detalle del vuelo privado (3 jets): " + detalleVueloPrivado);
+                System.out.println("Detalle del vuelo privado (3 jets): " +
+                                detalleVueloPrivado);
                 boolean error = false;
                 try {
                         // Consultar asientos disponibles del vuelo privado debe generar un error.
@@ -121,12 +124,13 @@ public class Principal {
                         throw new RuntimeException(
                                         "Consultar asientos disponibles del vuelo privado debe generar un error.");
 
-                // <<<<<<<< simulacion vuelo privado
+                // // <<<<<<<< simulacion vuelo privado
 
                 System.out.println(
                                 "Total recaudado en vuelos a 'Charles de Gaulle': "
                                                 + aerolinea.totalRecaudado("Charles de Gaulle"));
-                System.out.println("Total recaudado en vuelos a 'Bariloche': " + aerolinea.totalRecaudado("Bariloche"));
+                System.out.println("Total recaudado en vuelos a 'Bariloche': " +
+                                aerolinea.totalRecaudado("Bariloche"));
 
                 // Mostrar el estado general del sistema
                 System.out.println("\nEstado general del sistema:");
