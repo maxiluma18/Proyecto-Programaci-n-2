@@ -14,6 +14,7 @@ public class Aerolinea implements IAerolinea {
     private Map<String, Vuelo> Vuelos;
     private Map<Integer, Cliente> clientes;
 
+    //Funcion 1
     public Aerolinea(String nombre, String cuit) {
         this.nombre = nombre;
         this.cuit = cuit;
@@ -21,7 +22,19 @@ public class Aerolinea implements IAerolinea {
         this.clientes = new HashMap<>();
         this.Vuelos = new HashMap<>();
     }
-    
+    //Funcion 2
+    public void registrarCliente(int dni, String nombre, String telefono) {
+        if (clientes.containsKey(dni)) {
+            throw new RuntimeErrorException(null, "Cliente ya existente");
+        }
+        validacionDni(dni);
+        validacionNombre(nombre);
+        validacionTelefono(telefono);
+        
+        Cliente nuevoCliente = new Cliente(dni, nombre, telefono);
+        clientes.put(dni, nuevoCliente);
+    }
+    //Funcion 3
     public void registrarAeropuerto(String nombre, String pais, String provincia, String direccion) {
         // si ya existe ese aeropuerto en aerpuertos no se hace
         if (aeropuertos.containsKey(nombre)) {
@@ -35,19 +48,7 @@ public class Aerolinea implements IAerolinea {
         Aeropuerto nuevoAeropuerto = new Aeropuerto(nombre, pais, provincia, direccion);
         aeropuertos.put(nombre, nuevoAeropuerto);
     }
-
-    public void registrarCliente(int dni, String nombre, String telefono) {
-        if (clientes.containsKey(dni)) {
-            throw new RuntimeErrorException(null, "Cliente ya existente");
-        }
-        validacionDni(dni);
-        validacionNombre(nombre);
-        validacionTelefono(telefono);
-        
-        Cliente nuevoCliente = new Cliente(dni, nombre, telefono);
-        clientes.put(dni, nuevoCliente);
-    }
-
+    //Funcion 4
     public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio, double[] precios, int[] cantAsientos) {
         validacionOrigenDestinoNacional(origen, destino);
         validacionPreciosCantAsientosNacional(precios, cantAsientos);
@@ -57,15 +58,12 @@ public class Aerolinea implements IAerolinea {
         if (!fechaValida(fecha)) {
             throw new RuntimeErrorException(null, "Fecha invalida");
         }
-        
-        VueloNacional nuevoVuelo = new VueloNacional(origen, destino, fecha, tripulantes, valorRefrigerio, precios,
-                cantAsientos);
-
+        VueloNacional nuevoVuelo = new VueloNacional(origen, destino, fecha, tripulantes, valorRefrigerio, precios,cantAsientos);
         String codigoVuelo = nuevoVuelo.getCodigo();
         Vuelos.put(codigoVuelo, nuevoVuelo);
         return codigoVuelo;
     }
-
+    //Funcion 5
     public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) {
         validacionOrigenDestinoInternacional(origen, destino);
         validacionFecha(fecha);
@@ -77,15 +75,13 @@ public class Aerolinea implements IAerolinea {
         if (!fechaValida(fecha)) {
             throw new RuntimeErrorException(null, "Fecha invalida");
         }
-        
         VueloInternacional nuevoVuelo = new VueloInternacional(origen, destino, fecha, tripulantes, valorRefrigerio,
                 cantRefrigerios, precios, cantAsientos, escalas);
         String codigoVuelo = nuevoVuelo.getCodigo();
         Vuelos.put(codigoVuelo, nuevoVuelo);
-
         return codigoVuelo;
     }
-
+    //Funcion 6 y 10
     public String VenderVueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,
             int dniComprador, int[] acompaniantes) {
         validacionOrigenDestinoNacional(origen, destino);
@@ -100,14 +96,13 @@ public class Aerolinea implements IAerolinea {
         if (!fechaValida(fecha)) {
             throw new RuntimeErrorException(null, "Fecha invalida");
         }
-        
         VueloPrivado nuevoVuelo = new VueloPrivado(origen, destino, fecha, tripulantes, precio, dniComprador,
                 acompaniantes);
         String codigoVuelo = nuevoVuelo.getCodigo();
         Vuelos.put(codigoVuelo, nuevoVuelo);
         return codigoVuelo;
     }
-
+    //Funcion 7
     public Map<Integer, String> asientosDisponibles(String codVuelo) {
         Vuelo vuelo = Vuelos.get(codVuelo);
         if (vuelo == null) {
@@ -123,7 +118,7 @@ public class Aerolinea implements IAerolinea {
             throw new RuntimeException("El vuelo no tiene acceso a los asientos");
         }
     }
-
+    //Funcion 8 y 9
     public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) {
         if (clientes.get(dni) == null) {
             throw new RuntimeException("El cliente no está registrado");
@@ -169,14 +164,12 @@ public class Aerolinea implements IAerolinea {
             } else {
                 throw new RuntimeException("Hubo un error en la designación del asiento");
             }
-
         } else {
             throw new RuntimeException("El vuelo no forma parte de las clases definidas");
         }
-
         return resultado;
     }
-
+    //Funcion 11
     public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) {
         List<String> resultado = new ArrayList<>();
         for (Vuelo vuelo : Vuelos.values()) {
@@ -195,11 +188,10 @@ public class Aerolinea implements IAerolinea {
                     resultado.add(vueloNacional.toString());
                 }
             }
-
         }
         return resultado;
     }
-
+    //Funcion 12-A
     public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
         Cliente cl = clientes.get(dni);
         if (cl == null) {
@@ -233,7 +225,7 @@ public class Aerolinea implements IAerolinea {
             throw new RuntimeException("El pasaje no existe o no se tiene acceso");
         }
     }
-
+    //Funcion 13
     public List<String> cancelarVuelo(String codVuelo) {
         List<String> listaPasajerosReprogramados = new ArrayList<>();
         Vuelo vuelo = Vuelos.get(codVuelo);
@@ -298,7 +290,11 @@ public class Aerolinea implements IAerolinea {
 
         return listaPasajerosReprogramados;
     }
-
+    //Funcion 14
+    public double totalRecaudado(String destino){
+        return 1.0;
+    }
+    //Funcion 15
     public String detalleDeVuelo(String codVuelo){
         if(codVuelo == null || codVuelo.isEmpty()){
             throw new RuntimeErrorException(null, "codVuelo no puede ser nulo o vacio");
