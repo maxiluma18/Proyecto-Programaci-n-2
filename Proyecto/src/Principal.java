@@ -24,8 +24,6 @@ public class Principal {
                 aerolinea.registrarAeropuerto("JFK", "Estados Unidos", "Estado de Nueva York", "Queens, NY 11430");
                 aerolinea.registrarAeropuerto("Guarulhos", "Brasil", "São Paulo",
                                 "Rod. Hélio Smidt, s/n - Cumbica, Guarulhos");
-                aerolinea.registrarAeropuerto("Aeroparque", "Argentina", "Provincia de Buenos Aires",
-                                "Av. Costanera Rafael Obligado");
 
                 // Registrar clientes
                 aerolinea.registrarCliente(12345678, "Juan Perez", "011-1234-5678");
@@ -51,9 +49,12 @@ public class Principal {
                                 "20/11/2024", 12, 6000, 3, preciosInternacional, cantAsientosInternacional, escalas);
 
                 // Vender pasajes
-                int codPasaje1 = aerolinea.venderPasaje(12345678, codVueloNacional, 5, true);
-                int codPasaje2 = aerolinea.venderPasaje(87654321, codVueloInternacional, 1,
-                                false);
+                int codPasaje1 = aerolinea.venderPasaje(12345678, codVueloNacional, 5, false);
+                int codPasaje2 = aerolinea.venderPasaje(12345678, codVueloNacional, 170, true);
+                int codPasaje3 = aerolinea.venderPasaje(12345678, codVueloNacional, 169, false);
+                int codPasaje4 = aerolinea.venderPasaje(12345678, codVueloNacional, 150, false);
+                // int codPasaje5 = aerolinea.venderPasaje(87654321, codVueloInternacional, 1,
+                // false);
 
                 // Mostrar estado del sistema
                 System.out.println("===== ESTADO DEL SISTEMA =====");
@@ -78,6 +79,9 @@ public class Principal {
 
                 // Cancelar un pasaje
                 aerolinea.cancelarPasaje(12345678, codVueloNacional, 5);
+                // aerolinea.cancelarPasaje(12345678, codVueloNacional, 170);
+                // aerolinea.cancelarPasaje(12345678, codVueloNacional, 169);
+                // aerolinea.cancelarPasaje(12345678, codVueloNacional, 150);
                 System.out.println("Pasaje 1 cancelado. Asientos disponibles tras la cancelación: "
                                 + aerolinea.asientosDisponibles(codVueloNacional));
 

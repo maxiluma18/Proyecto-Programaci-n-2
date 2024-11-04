@@ -9,6 +9,7 @@ public abstract class VueloPublico extends Vuelo {
     protected static int codigoPasajeIncremental = 1;
     protected int[][] cantAsientos;
     protected Map<Integer, Pasaje> pasajerosPorDNI;
+    protected Map<Integer, Pasaje> pasajerosPorCodPasaje;
     protected double[] precios;
     protected double valorRefrigerio;
     private double recaudacionTotal;
@@ -19,6 +20,7 @@ public abstract class VueloPublico extends Vuelo {
         super(origen, destino, fecha, tripulantes);
         this.codigo = generarCodigoVuelo() + "-PUB";
         this.pasajerosPorDNI = new HashMap<>();
+        this.pasajerosPorCodPasaje = new HashMap<>();
         this.recaudacionTotal = 0;
     }
 
@@ -45,7 +47,6 @@ public abstract class VueloPublico extends Vuelo {
 
     public int venderPasaje(int dni, int nroAsiento, boolean aOcupar, String codVuelo) {
         if (nroAsiento <= 0) {
-            System.out.println("ACACA");
             return 0;
         }
         int totalAsientos = cantAsientos[0].length + cantAsientos[1].length;
@@ -66,16 +67,23 @@ public abstract class VueloPublico extends Vuelo {
             if (cantAsientos[0][nroAsiento - 1] == 0) {
                 cantAsientos[0][nroAsiento - 1] = 1;
                 pasajerosPorDNI.put(dni, new Pasaje(dni, nroAsiento, "Turista", aOcupar, codVuelo, codPasaje));
+                pasajerosPorCodPasaje.put(codPasaje,
+                        new Pasaje(dni, nroAsiento, "Turista", aOcupar, codVuelo, codPasaje));
                 return true;
             } else {
                 return false;
             }
         } else if (nroAsiento <= cantAsientos[0].length + cantAsientos[1].length) {
-            // Asiento Ejecutivo
+
             int asientoEjecutivo = nroAsiento - cantAsientos[0].length - 1;
+
             if (cantAsientos[1][asientoEjecutivo] == 0) {
+
                 cantAsientos[1][asientoEjecutivo] = 1;
                 pasajerosPorDNI.put(dni, new Pasaje(dni, nroAsiento, "Ejecutivo", aOcupar, codVuelo, codPasaje));
+                pasajerosPorCodPasaje.put(codPasaje,
+                        new Pasaje(dni, nroAsiento, "Ejecutivo", aOcupar, codVuelo, codPasaje));
+
                 return true;
             }
             return false;
@@ -84,12 +92,13 @@ public abstract class VueloPublico extends Vuelo {
     }
 
     public boolean tienePasaje(int dni) {
-
         return pasajerosPorDNI.containsKey(dni);
     }
 
     public void cancelarPasaje(int dni, int nroAsiento) {
+        int codPasaje = pasajerosPorDNI.get(dni).getCodPasaje();
         pasajerosPorDNI.remove(dni);
+        pasajerosPorCodPasaje.remove(codPasaje);
         int lenCantAsiento0 = cantAsientos[0].length;
         int lenCantAsiento01 = cantAsientos[0].length + cantAsientos[1].length;
         if (nroAsiento <= lenCantAsiento0) {
@@ -99,6 +108,11 @@ public abstract class VueloPublico extends Vuelo {
         } else {
             throw new RuntimeErrorException(null, "No existe el asiento");
         }
+    }
+
+    public void cancelarPasaje2(int dni) {
+        int nroAsiento = pasajerosPorDNI.get(dni).getNroAsiento();
+        cancelarPasaje(dni, nroAsiento);
     }
 
     public int asignarAsiento(int dni, int nroAsiento, String clase, boolean ocupado) {
@@ -161,13 +175,16 @@ public abstract class VueloPublico extends Vuelo {
             return cantAsientos[2][nroAsiento - cantAsientos[0].length - cantAsientos[1].length - 1] == 1;
         }
     }
-    //GETTERS
+
+    // GETTERS
     public Map<Integer, Pasaje> getPasajeros() {
-        return pasajerosPorDNI;
+        return pasajerosPorCodPasaje;
     }
+
     public double getRecaudacionTotal() {
         return recaudacionTotal;
     }
+
     public String getCodigo() {
         return codigo;
     }

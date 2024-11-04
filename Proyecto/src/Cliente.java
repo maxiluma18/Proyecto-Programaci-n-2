@@ -18,12 +18,18 @@ public class Cliente {
     public void cambiarEstado(boolean pasajero) {
         this.esPasajero = pasajero;
     }
-    //GETTERS
+
+    // GETTERS
     public String getTelefono() {
         return telefono;
     }
+
     public String getNombre() {
         return this.nombre;
+    }
+
+    public int getDni() {
+        return this.dni;
     }
 
 }

@@ -42,7 +42,9 @@ public class VueloNacional extends VueloPublico {
 
     @Override
     public void cancelarPasaje(int dni, int nroAsiento) {
+        int codPasaje = pasajerosPorDNI.get(dni).getCodPasaje();
         pasajerosPorDNI.remove(dni);
+        pasajerosPorCodPasaje.remove(codPasaje);
         int lenCantAsiento0 = cantAsientos[0].length;
         int lenCantAsiento01 = cantAsientos[0].length + cantAsientos[1].length;
         if (nroAsiento <= lenCantAsiento0) {

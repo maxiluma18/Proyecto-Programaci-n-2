@@ -63,6 +63,7 @@ public class VueloTest {
             int resultado = aerolinea.venderPasaje(12345678, codigoVueloNacional, 1, true);
             System.out.println("Pasaje vendido exitosamente, asiento asignado: " + resultado);
         } catch (Exception e) {
+            System.out.println();
             System.out.println("Error al vender pasaje: " + e.getMessage());
         }
 

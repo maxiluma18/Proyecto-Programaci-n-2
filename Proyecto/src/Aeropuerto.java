@@ -18,4 +18,16 @@ public class Aeropuerto {
     public String getPais() {
         return pais;
     }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getProvincia() {
+        return provincia;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
 }

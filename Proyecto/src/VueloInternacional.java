@@ -60,7 +60,8 @@ public class VueloInternacional extends VueloPublico {
             if (cantAsientos[0][nroAsiento - 1] == 0) {
                 cantAsientos[0][nroAsiento - 1] = 1;
                 pasajerosPorDNI.put(dni, new Pasaje(dni, nroAsiento, "Turista", aOcupar, codVuelo, codPasaje));
-
+                pasajerosPorCodPasaje.put(codPasaje,
+                        new Pasaje(dni, nroAsiento, "Turista", aOcupar, codVuelo, codPasaje));
                 return true;
             }
         } else if (nroAsiento <= cantAsientos[0].length + cantAsientos[1].length) {
@@ -69,7 +70,8 @@ public class VueloInternacional extends VueloPublico {
             if (cantAsientos[1][asientoEjecutivo] == 0) {
                 cantAsientos[1][asientoEjecutivo] = 1;
                 pasajerosPorDNI.put(dni, new Pasaje(dni, nroAsiento, "Ejecutivo", aOcupar, codVuelo, codPasaje));
-
+                pasajerosPorCodPasaje.put(codPasaje,
+                        new Pasaje(dni, nroAsiento, "Ejecutivo", aOcupar, codVuelo, codPasaje));
                 return true;
             }
         } else if (nroAsiento <= cantAsientos[0].length + cantAsientos[1].length + cantAsientos[2].length) {
@@ -78,6 +80,8 @@ public class VueloInternacional extends VueloPublico {
             if (cantAsientos[2][asientoPrimeraClase] == 0) {
                 cantAsientos[2][asientoPrimeraClase] = 1;
                 pasajerosPorDNI.put(dni, new Pasaje(dni, nroAsiento, "Primera Clase", aOcupar, codVuelo, codPasaje));
+                pasajerosPorCodPasaje.put(codPasaje,
+                        new Pasaje(dni, nroAsiento, "Primera Clase", aOcupar, codVuelo, codPasaje));
                 return true;
             }
         }
@@ -86,7 +90,9 @@ public class VueloInternacional extends VueloPublico {
 
     @Override
     public void cancelarPasaje(int dni, int nroAsiento) {
+        int codPasaje = pasajerosPorDNI.get(dni).getCodPasaje();
         pasajerosPorDNI.remove(dni);
+        pasajerosPorCodPasaje.remove(codPasaje);
         int lenCantAsiento0 = cantAsientos[0].length;
         int lenCantAsiento01 = cantAsientos[0].length + cantAsientos[1].length;
         int lenCantAsiento012 = cantAsientos[0].length + cantAsientos[1].length + cantAsientos[2].length;
