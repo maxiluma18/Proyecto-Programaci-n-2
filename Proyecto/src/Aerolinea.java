@@ -249,22 +249,27 @@ public class Aerolinea implements IAerolinea {
         if (cl == null) {
             throw new RuntimeException("El cliente no está registrado");
         }
-
         for (Vuelo vuelo : Vuelos.values()) {
             if (vuelo instanceof VueloNacional && ((VueloNacional) vuelo).tienePasaje(dni)) {
                 VueloNacional vueloNacional = (VueloNacional) vuelo;
-                vueloNacional.cancelarPasaje2(dni);
-
-            } else if (vuelo instanceof VueloInternacional && ((VueloInternacional) vuelo).tienePasaje(dni)) {
-                VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
-                if (vueloInternacional.tienePasaje(dni)) {
-                    vueloInternacional.cancelarPasaje2(dni);
-                } else {
-                    throw new RuntimeException("El pasaje no existe");
+                int nroAsiento = vueloNacional.getPasajerosporCodPasaje().get(codPasaje).getNroAsiento();
+                vueloNacional.cancelarPasaje(dni, nroAsiento, codPasaje);
+                if (cl.esPasajero()) {
+                    cl.cambiarEstado(false);
                 }
+                return;
+
+            } else if (vuelo instanceof VueloInternacional
+                    && ((VueloInternacional) vuelo).tienePasaje(dni)) {
+                VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
+                int nroAsiento = vueloInternacional.getPasajerosporCodPasaje().get(codPasaje).getNroAsiento();
+                vueloInternacional.cancelarPasaje(dni, nroAsiento, codPasaje);
+                if (cl.esPasajero()) {
+                    cl.cambiarEstado(false);
+                }
+                return;
             }
         }
-
     }
 
     // Funcion 13
@@ -283,7 +288,7 @@ public class Aerolinea implements IAerolinea {
         VueloPublico vueloPublico = (VueloPublico) vuelo;
         boolean encontroVueloValido = false;
 
-        Map<Integer, Pasaje> pasajerosVuelo = new HashMap<>(vueloPublico.getPasajeros());
+        Map<Integer, Pasaje> pasajerosVuelo = new HashMap<>(vueloPublico.getPasajerosporCodPasaje());
 
         if (pasajerosVuelo.size() > 0) {
             for (Vuelo v : new ArrayList<>(Vuelos.values())) {

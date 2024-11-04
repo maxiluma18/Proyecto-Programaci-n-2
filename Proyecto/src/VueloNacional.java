@@ -43,8 +43,41 @@ public class VueloNacional extends VueloPublico {
     @Override
     public void cancelarPasaje(int dni, int nroAsiento) {
         int codPasaje = pasajerosPorDNI.get(dni).getCodPasaje();
-        pasajerosPorDNI.remove(dni);
         pasajerosPorCodPasaje.remove(codPasaje);
+        int cantidadPasajes = contadorPasajesPorDNI.get(dni);
+        if (cantidadPasajes == 0) {
+            pasajerosPorDNI.remove(dni);
+            contadorPasajesPorDNI.remove(dni);
+        } else {
+            contadorPasajesPorDNI.put(dni, cantidadPasajes - 1);
+        }
+        int lenCantAsiento0 = cantAsientos[0].length;
+        int lenCantAsiento01 = cantAsientos[0].length + cantAsientos[1].length;
+        if (nroAsiento <= lenCantAsiento0) {
+            cantAsientos[0][nroAsiento - 1] = 0;
+            String clase = determinarClase(nroAsiento);
+            double precioPasaje = calcularPrecioPasaje(clase) + valorRefrigerio;
+            actualizarRecaudacion(-precioPasaje);
+        } else if (nroAsiento <= lenCantAsiento01) {
+            cantAsientos[1][nroAsiento - lenCantAsiento0 - 1] = 0;
+            String clase = determinarClase(nroAsiento);
+            double precioPasaje = calcularPrecioPasaje(clase) + valorRefrigerio;
+            actualizarRecaudacion(-precioPasaje);
+        } else {
+            throw new RuntimeErrorException(null, "No existe el asiento");
+        }
+    }
+
+    @Override
+    public void cancelarPasaje(int dni, int nroAsiento, int codPasaje) {
+        pasajerosPorCodPasaje.remove(codPasaje);
+        int cantidadPasajes = contadorPasajesPorDNI.get(dni);
+        if (cantidadPasajes == 1) {
+            pasajerosPorDNI.remove(dni);
+            contadorPasajesPorDNI.remove(dni);
+        } else {
+            contadorPasajesPorDNI.put(dni, cantidadPasajes - 1);
+        }
         int lenCantAsiento0 = cantAsientos[0].length;
         int lenCantAsiento01 = cantAsientos[0].length + cantAsientos[1].length;
         if (nroAsiento <= lenCantAsiento0) {
