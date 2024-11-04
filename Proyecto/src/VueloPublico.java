@@ -8,7 +8,6 @@ import javax.management.RuntimeErrorException;
 public abstract class VueloPublico extends Vuelo {
     protected static int codigoPasajeIncremental = 1;
     protected int[][] cantAsientos;
-    protected Map<Integer, Pasaje> pasajeros;
     protected Map<Integer, Pasaje> pasajerosPorDNI;
     protected double[] precios;
     protected double valorRefrigerio;
@@ -19,7 +18,6 @@ public abstract class VueloPublico extends Vuelo {
     public VueloPublico(String origen, String destino, String fecha, int tripulantes, int[] cantAsientos) {
         super(origen, destino, fecha, tripulantes);
         this.codigo = generarCodigoVuelo() + "-PUB";
-        this.pasajeros = new HashMap<>();
         this.pasajerosPorDNI = new HashMap<>();
         this.recaudacionTotal = 0;
     }
@@ -59,7 +57,7 @@ public abstract class VueloPublico extends Vuelo {
             return 0;
         }
         int totalAsientos = cantAsientos[0].length + cantAsientos[1].length;
-        if (pasajeros.size() >= totalAsientos - 1) {
+        if (pasajerosPorDNI.size() >= totalAsientos - 1) {
             return 0;
         }
         int codPasaje = codigoPasajeIncremental++;
@@ -75,7 +73,6 @@ public abstract class VueloPublico extends Vuelo {
             // Asiento Turista
             if (cantAsientos[0][nroAsiento - 1] == 0) {
                 cantAsientos[0][nroAsiento - 1] = 1;
-                pasajeros.put(codPasaje, new Pasaje(dni, nroAsiento, "Turista", aOcupar, codVuelo, codPasaje));
                 pasajerosPorDNI.put(dni, new Pasaje(dni, nroAsiento, "Turista", aOcupar, codVuelo, codPasaje));
                 return true;
             } else {
@@ -86,7 +83,6 @@ public abstract class VueloPublico extends Vuelo {
             int asientoEjecutivo = nroAsiento - cantAsientos[0].length - 1;
             if (cantAsientos[1][asientoEjecutivo] == 0) {
                 cantAsientos[1][asientoEjecutivo] = 1;
-                pasajeros.put(codPasaje, new Pasaje(dni, nroAsiento, "Ejecutivo", aOcupar, codVuelo, codPasaje));
                 pasajerosPorDNI.put(dni, new Pasaje(dni, nroAsiento, "Ejecutivo", aOcupar, codVuelo, codPasaje));
                 return true;
             }
@@ -95,14 +91,13 @@ public abstract class VueloPublico extends Vuelo {
         return false;
     }
 
-    public boolean tienePasaje(int dni, int nroAsiento) {
-        return pasajerosPorDNI.containsKey(dni) && pasajerosPorDNI.get(dni).getNroAsiento() == nroAsiento;
+    public boolean tienePasaje(int dni) {
+
+        return pasajerosPorDNI.containsKey(dni);
     }
 
     public void cancelarPasaje(int dni, int nroAsiento) {
-        int codigoPasaje = pasajerosPorDNI.get(dni).getCodPasaje();
         pasajerosPorDNI.remove(dni);
-        pasajeros.remove(codigoPasaje);
         int lenCantAsiento0 = cantAsientos[0].length;
         int lenCantAsiento01 = cantAsientos[0].length + cantAsientos[1].length;
         if (nroAsiento <= lenCantAsiento0) {
@@ -126,14 +121,16 @@ public abstract class VueloPublico extends Vuelo {
         } else if (clase.equals("Ejecutivo")) {
             clasesDisponibles.add("Ejecutivo");
             clasesDisponibles.add("Primera Clase");
-        } else if (clase.equals("Primera Clase")) {
-            clasesDisponibles.add("Primera Clase");
+        } else {
+            throw new RuntimeErrorException(null, "Clase inexistente");
         }
 
         for (String claseActual : clasesDisponibles) {
             int asientoDisponible = encontrarAsientoDisponible(claseActual);
             if (asientoDisponible != -1) {
                 if (ocuparAsiento(dni, asientoDisponible, codPasaje, ocupado, codVuelo)) {
+                    double precioPasaje = calcularPrecioPasaje(clase) + valorRefrigerio;
+                    actualizarRecaudacion(precioPasaje);
                     return codPasaje;
                 }
             }
@@ -142,7 +139,7 @@ public abstract class VueloPublico extends Vuelo {
         return -1;
     }
 
-    private int encontrarAsientoDisponible(String clase) {
+    protected int encontrarAsientoDisponible(String clase) {
         int inicio, fin;
         if (clase.equals("Turista")) {
             inicio = 1;
@@ -163,7 +160,7 @@ public abstract class VueloPublico extends Vuelo {
         return -1;
     }
 
-    private boolean estaOcupado(int nroAsiento) {
+    protected boolean estaOcupado(int nroAsiento) {
         if (nroAsiento <= cantAsientos[0].length) {
             return cantAsientos[0][nroAsiento - 1] == 1;
         } else if (nroAsiento <= cantAsientos[0].length + cantAsientos[1].length) {
@@ -174,6 +171,6 @@ public abstract class VueloPublico extends Vuelo {
     }
 
     public Map<Integer, Pasaje> getPasajeros() {
-        return pasajeros;
+        return pasajerosPorDNI;
     }
 }

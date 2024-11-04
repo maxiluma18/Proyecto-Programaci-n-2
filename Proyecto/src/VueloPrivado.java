@@ -55,7 +55,7 @@ public class VueloPrivado extends Vuelo {
     }
 
     public double getRecaudacionTotal() {
-        return recaudacionTotal;
+        return this.recaudacionTotal;
     }
 
     public int getCantJets() {

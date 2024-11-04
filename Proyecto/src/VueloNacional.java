@@ -38,7 +38,7 @@ public class VueloNacional extends VueloPublico {
             return 0;
 
         int totalAsientos = cantAsientos[0].length + cantAsientos[1].length;
-        if (pasajeros.size() >= totalAsientos - 1) {
+        if (pasajerosPorDNI.size() >= totalAsientos - 1) {
             return 0;
         }
 
@@ -60,7 +60,6 @@ public class VueloNacional extends VueloPublico {
     public void cancelarPasaje(int dni, int nroAsiento) {
         int codigoPasaje = pasajerosPorDNI.get(dni).getCodPasaje();
         pasajerosPorDNI.remove(dni);
-        pasajeros.remove(codigoPasaje);
         int lenCantAsiento0 = cantAsientos[0].length;
         int lenCantAsiento01 = cantAsientos[0].length + cantAsientos[1].length;
         if (nroAsiento <= lenCantAsiento0) {

@@ -83,6 +83,8 @@ public class Aerolinea implements IAerolinea {
 
         String codigoVuelo = nuevoVuelo.getCodigo();
         Vuelos.put(codigoVuelo, nuevoVuelo);
+        System.out.println("Registrando vuelo nacional con código: " + codigoVuelo);
+
         return codigoVuelo;
     }
 
@@ -253,7 +255,7 @@ public class Aerolinea implements IAerolinea {
         }
         if (v instanceof VueloInternacional) {
             VueloInternacional vueloInternacional = (VueloInternacional) v;
-            if (vueloInternacional.tienePasaje(dni, nroAsiento)) {
+            if (vueloInternacional.tienePasaje(dni)) {
                 vueloInternacional.cancelarPasaje(dni, nroAsiento);
                 if (cl.esPasajero()) {
                     cl.cambiarEstado(false);
@@ -263,7 +265,7 @@ public class Aerolinea implements IAerolinea {
             }
         } else if (v instanceof VueloNacional) {
             VueloNacional vueloNacional = (VueloNacional) v;
-            if (vueloNacional.tienePasaje(dni, nroAsiento)) {
+            if (vueloNacional.tienePasaje(dni)) {
                 vueloNacional.cancelarPasaje(dni, nroAsiento);
                 if (cl.esPasajero()) {
                     cl.cambiarEstado(false);
@@ -292,19 +294,19 @@ public class Aerolinea implements IAerolinea {
         Map<Integer, Pasaje> pasajerosVuelo = new HashMap<>(vueloPublico.getPasajeros());
         boolean encontroVueloValido = false;
         for (Vuelo v : new ArrayList<>(Vuelos.values())) {
-            if (v instanceof VueloPublico) {
-                VueloPublico vueloPublicoNuevo = (VueloPublico) v;
-                if (vueloPublicoNuevo != vueloPublico &&
-                        vueloPublicoNuevo.getOrigen().equals(vueloPublico.getOrigen()) &&
-                        vueloPublicoNuevo.getDestino().equals(vueloPublico.getDestino()) &&
-                        vueloPublicoNuevo.fechaValida(vueloPublico.getFecha())) {
+            if (v instanceof VueloNacional) {
+                VueloNacional vueloNacional = (VueloNacional) v;
+                if (vueloNacional != vueloPublico &&
+                        vueloNacional.getOrigen().equals(vueloPublico.getOrigen()) &&
+                        vueloNacional.getDestino().equals(vueloPublico.getDestino()) &&
+                        vueloNacional.fechaValida(vueloPublico.getFecha())) {
                     encontroVueloValido = true;
                     for (Pasaje p : pasajerosVuelo.values()) {
                         String telefonoCliente = clientes.get(p.getDni()).getTelefono();
                         String nombreCliente = clientes.get(p.getDni()).getNombre();
-                        String codVueloNuevo = vueloPublicoNuevo.getCodigo();
+                        String codVueloNuevo = vueloNacional.getCodigo();
 
-                        if (vueloPublicoNuevo.asignarAsiento(p.getDni(),
+                        if (vueloNacional.asignarAsiento(p.getDni(),
                                 p.getNroAsiento(),
                                 p.getClase(),
                                 p.getOcupado()) > 0) {
@@ -322,7 +324,40 @@ public class Aerolinea implements IAerolinea {
                         }
                     }
                 }
+            } else if (v instanceof VueloInternacional) {
+                VueloInternacional vueloInternacional = (VueloInternacional) v;
+                if (vueloInternacional != vueloPublico &&
+                        vueloInternacional.getOrigen().equals(vueloPublico.getOrigen()) &&
+                        vueloInternacional.getDestino().equals(vueloPublico.getDestino()) &&
+                        vueloInternacional.fechaValida(vueloPublico.getFecha())) {
+                    encontroVueloValido = true;
+                    for (Pasaje p : pasajerosVuelo.values()) {
+                        String telefonoCliente = clientes.get(p.getDni()).getTelefono();
+                        String nombreCliente = clientes.get(p.getDni()).getNombre();
+                        String codVueloNuevo = vueloInternacional.getCodigo();
+
+                        if (vueloInternacional.asignarAsiento(p.getDni(),
+                                p.getNroAsiento(),
+                                p.getClase(),
+                                p.getOcupado()) > 0) {
+                            agregarPasajero(listaPasajerosReprogramados,
+                                    p.getDni(),
+                                    nombreCliente,
+                                    telefonoCliente,
+                                    codVueloNuevo);
+                        } else {
+                            agregarPasajero(listaPasajerosReprogramados,
+                                    p.getDni(),
+                                    nombreCliente,
+                                    telefonoCliente,
+                                    "CANCELADO");
+                        }
+                    }
+                }
+            } else {
+                System.out.println("No se pudo encontrar un vuelo válido para el pasajero");
             }
+
         }
 
         if (!encontroVueloValido) {
@@ -341,6 +376,26 @@ public class Aerolinea implements IAerolinea {
         return listaPasajerosReprogramados;
     }
 
+    public double totalRecaudado(String codVuelo) {
+        Vuelo v = Vuelos.get(codVuelo);
+
+        System.out.println("Buscando vuelo con código: " + codVuelo);
+        if (v == null) {
+            System.out.println("NO EXISTE");
+        }
+        if (v instanceof VueloNacional) {
+            VueloNacional vueloNacional = (VueloNacional) v;
+            System.out.println(vueloNacional);
+            return vueloNacional.getRecaudacionTotal();
+        } else if (v instanceof VueloInternacional) {
+            VueloInternacional vueloInternacional = (VueloInternacional) v;
+            return vueloInternacional.getRecaudacionTotal();
+        } else {
+            VueloPrivado vueloPrivado = (VueloPrivado) v;
+            return vueloPrivado.getRecaudacionTotal();
+        }
+    }
+
     // *Funciones Auxiliares---------------------
     public void agregarPasajero(List<String> lista, int dni, String nombre,
             String telefono, String codVuelo) {
@@ -356,7 +411,6 @@ public class Aerolinea implements IAerolinea {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/uuuu");
         LocalDate fechaVuelo = LocalDate.parse(fecha, formatter);
         LocalDate fechaHoy = LocalDate.now();
-
         return fechaVuelo.isAfter(fechaHoy);
     }
 }
