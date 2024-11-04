@@ -24,6 +24,8 @@ public class Principal {
                 aerolinea.registrarAeropuerto("JFK", "Estados Unidos", "Estado de Nueva York", "Queens, NY 11430");
                 aerolinea.registrarAeropuerto("Guarulhos", "Brasil", "São Paulo",
                                 "Rod. Hélio Smidt, s/n - Cumbica, Guarulhos");
+                aerolinea.registrarAeropuerto("Aeroparque", "Argentina", "Provincia de Buenos Aires",
+                                "Av. Costanera Rafael Obligado");
 
                 // Registrar clientes
                 aerolinea.registrarCliente(12345678, "Juan Perez", "011-1234-5678");

@@ -38,17 +38,9 @@ public abstract class VueloPublico extends Vuelo {
         this.recaudacionTotal += monto;
     }
 
-    public double getRecaudacionTotal() {
-        return recaudacionTotal;
-    }
-
     private static String generarCodigoVuelo() {
         contadorVuelos++;
         return String.valueOf(contadorVuelos);
-    }
-
-    public String getCodigo() {
-        return codigo;
     }
 
     public int venderPasaje(int dni, int nroAsiento, boolean aOcupar, String codVuelo) {
@@ -169,8 +161,15 @@ public abstract class VueloPublico extends Vuelo {
             return cantAsientos[2][nroAsiento - cantAsientos[0].length - cantAsientos[1].length - 1] == 1;
         }
     }
-
+    //GETTERS
     public Map<Integer, Pasaje> getPasajeros() {
         return pasajerosPorDNI;
     }
+    public double getRecaudacionTotal() {
+        return recaudacionTotal;
+    }
+    public String getCodigo() {
+        return codigo;
+    }
+
 }

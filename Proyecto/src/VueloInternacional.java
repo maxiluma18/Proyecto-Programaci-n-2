@@ -1,6 +1,5 @@
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.management.RuntimeErrorException;
@@ -112,37 +111,13 @@ public class VueloInternacional extends VueloPublico {
         }
     }
 
-    @Override
-    public int asignarAsiento(int dni, int nroAsiento, String clase, boolean ocupado) {
-        int codPasaje = codigoPasajeIncremental++;
-        String codVuelo = this.getCodigo();
+    // GETTERS
+    public String[] getEscalas() {
+        return this.escalas;
+    }
 
-        List<String> clasesDisponibles = new ArrayList<>();
-        if (clase.equals("Turista")) {
-            clasesDisponibles.add("Turista");
-            clasesDisponibles.add("Ejecutivo");
-            clasesDisponibles.add("Primera Clase");
-        } else if (clase.equals("Ejecutivo")) {
-            clasesDisponibles.add("Ejecutivo");
-            clasesDisponibles.add("Primera Clase");
-        } else if (clase.equals("Primera Clase")) {
-            clasesDisponibles.add("Primera Clase");
-        } else {
-            throw new RuntimeErrorException(null, "Clase no disponible");
-        }
-
-        for (String claseActual : clasesDisponibles) {
-            int asientoDisponible = encontrarAsientoDisponible(claseActual);
-            if (asientoDisponible != -1) {
-                if (ocuparAsiento(dni, asientoDisponible, codPasaje, ocupado, codVuelo)) {
-                    double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
-                    actualizarRecaudacion(precioPasaje);
-                    return codPasaje;
-                }
-            }
-        }
-
-        return -1;
+    public String getTipoVuelo() {
+        return "INTERNACIONAL";
     }
 
     public Map<Integer, String> getAsientosDisponibles() {
@@ -166,9 +141,4 @@ public class VueloInternacional extends VueloPublico {
         }
         return asientos;
     }
-
-    public String[] getEscalas() {
-        return this.escalas;
-    }
-
 }

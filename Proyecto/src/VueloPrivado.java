@@ -22,7 +22,7 @@ public class VueloPrivado extends Vuelo {
     private int cantJets() {
         int cantidad = acompaniantes.length;
         int jets = cantidad / cantidadPasajerosPorJet;
-        if (cantidad % cantidadPasajerosPorJet > 0) {
+        if (cantidad % cantidadPasajerosPorJet >= 0) {
             jets++;
         }
         return jets;
@@ -37,7 +37,7 @@ public class VueloPrivado extends Vuelo {
         contadorVuelos++;
         return String.valueOf(contadorVuelos);
     }
-
+    //GETTERS
     public String getCodigo() {
         return codigo;
     }
@@ -61,4 +61,8 @@ public class VueloPrivado extends Vuelo {
     public int getCantJets() {
         return cantJets;
     }
+    public String getTipoVuelo(){
+        return "PRIVADO" + " ("+ cantJets + ")";
+    }
+    
 }

@@ -16,22 +16,6 @@ public class VueloNacional extends VueloPublico {
         this.cantAsientos[1] = new int[cantAsientos[1]];
     }
 
-    public Map<Integer, String> getAsientosDisponibles() {
-        Map<Integer, String> asientos = new HashMap<>();
-        for (int i = 0; i < cantAsientos[0].length; i++) {
-            if (cantAsientos[0][i] == 0) {
-                asientos.put(i + 1, "Turista");
-            }
-        }
-        int baseEjecutivo = cantAsientos[0].length;
-        for (int i = 0; i < cantAsientos[1].length; i++) {
-            if (cantAsientos[1][i] == 0) {
-                asientos.put(baseEjecutivo + i + 1, "Ejecutivo");
-            }
-        }
-        return asientos;
-    }
-
     @Override
     public int venderPasaje(int dni, int nroAsiento, boolean aOcupar, String codVuelo) {
         if (nroAsiento <= 0)
@@ -58,7 +42,6 @@ public class VueloNacional extends VueloPublico {
 
     @Override
     public void cancelarPasaje(int dni, int nroAsiento) {
-        int codigoPasaje = pasajerosPorDNI.get(dni).getCodPasaje();
         pasajerosPorDNI.remove(dni);
         int lenCantAsiento0 = cantAsientos[0].length;
         int lenCantAsiento01 = cantAsientos[0].length + cantAsientos[1].length;
@@ -75,5 +58,26 @@ public class VueloNacional extends VueloPublico {
         } else {
             throw new RuntimeErrorException(null, "No existe el asiento");
         }
+    }
+
+    // GETTERS
+    public Map<Integer, String> getAsientosDisponibles() {
+        Map<Integer, String> asientos = new HashMap<>();
+        for (int i = 0; i < cantAsientos[0].length; i++) {
+            if (cantAsientos[0][i] == 0) {
+                asientos.put(i + 1, "Turista");
+            }
+        }
+        int baseEjecutivo = cantAsientos[0].length;
+        for (int i = 0; i < cantAsientos[1].length; i++) {
+            if (cantAsientos[1][i] == 0) {
+                asientos.put(baseEjecutivo + i + 1, "Ejecutivo");
+            }
+        }
+        return asientos;
+    }
+
+    public String getTipoVuelo() {
+        return "NACIONAL";
     }
 }

@@ -1,4 +1,3 @@
-import javax.management.RuntimeErrorException;
 
 public class Aeropuerto {
     private String nombre;
@@ -15,6 +14,7 @@ public class Aeropuerto {
 
     }
 
+    // GETTERS
     public String getPais() {
         return pais;
     }
