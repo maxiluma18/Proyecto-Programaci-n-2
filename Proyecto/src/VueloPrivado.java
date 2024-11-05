@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class VueloPrivado extends Vuelo {
     private double precio;
     private int dniComprador;
@@ -7,6 +10,7 @@ public class VueloPrivado extends Vuelo {
     private int cantidadPasajerosPorJet = 15;
     private int cantJets;
     private double recaudacionTotal;
+    private Map<String, Double> recaudacionPorDestino;
 
     public VueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,
             int dniComprador, int[] acompaniantes) {
@@ -17,6 +21,7 @@ public class VueloPrivado extends Vuelo {
         this.codigo = generarCodigoVuelo() + "-PRI";
         this.cantJets = cantJets();
         this.recaudacionTotal = calcularRecaudacionTotal();
+        this.recaudacionPorDestino = new HashMap<>();
     }
 
     private int cantJets() {
@@ -37,6 +42,11 @@ public class VueloPrivado extends Vuelo {
         contadorVuelos++;
         return String.valueOf(contadorVuelos);
     }
+
+    // protected void recaudacionDestino(String destino){
+    //     recaudacionPorDestino.put(destino, this.recaudacionTotal);
+    // }
+
     //GETTERS
     public String getCodigo() {
         return codigo;

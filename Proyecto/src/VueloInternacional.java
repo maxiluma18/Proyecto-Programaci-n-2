@@ -8,6 +8,8 @@ public class VueloInternacional extends VueloPublico {
     private double valorRefrigerio;
     private int cantRefrigerios;
     private String[] escalas;
+    private Map<String, Double> recaudacionPorDestino;
+    
 
     public VueloInternacional(String origen, String destino, String fecha, int tripulantes,
             double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos,
@@ -21,23 +23,26 @@ public class VueloInternacional extends VueloPublico {
         this.cantAsientos[0] = new int[cantAsientos[0]];
         this.cantAsientos[1] = new int[cantAsientos[1]];
         this.cantAsientos[2] = new int[cantAsientos[2]];
+        this.recaudacionPorDestino = new HashMap<>();
+        
     }
 
     @Override
     public int venderPasaje(int dni, int nroAsiento, boolean aOcupar, String codVuelo) {
-        if (nroAsiento <= 0)
-            return 0;
-
-        int totalAsientos = cantAsientos[0].length + cantAsientos[1].length + cantAsientos[2].length;
-        if (pasajerosPorDNI.size() >= totalAsientos - 1) {
+        if (nroAsiento <= 0){
             return 0;
         }
-
+        int totalAsientos = cantAsientos[0].length + cantAsientos[1].length + cantAsientos[2].length;
+        if (pasajerosPorCodPasaje.size() >= totalAsientos) {
+            return 0;
+        }
         int codPasaje = codigoPasajeIncremental++;
         String clase = determinarClase(nroAsiento);
+
         if (ocuparAsiento(dni, nroAsiento, codPasaje, aOcupar, codVuelo)) {
             double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
             actualizarRecaudacion(precioPasaje);
+
             return codPasaje;
         }
         return 0;
@@ -95,7 +100,7 @@ public class VueloInternacional extends VueloPublico {
     public void cancelarPasaje(int dni, int nroAsiento) {
         int codPasaje = pasajerosPorDNI.get(dni).getCodPasaje();
         pasajerosPorCodPasaje.remove(codPasaje);
-
+        
         int cantidadPasajes = contadorPasajesPorDNI.get(dni);
         if (cantidadPasajes == 0) {
             pasajerosPorDNI.remove(dni);
@@ -121,6 +126,7 @@ public class VueloInternacional extends VueloPublico {
             String clase = determinarClase(nroAsiento);
             double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
             actualizarRecaudacion(-precioPasaje);
+            //recaudacionPorDestino.put(vueloInternacional.getDestino(), recaudacionPorDestino.getOrDefault(vueloInternacional.getDestino(), 0.0) + vueloInternacional.getRecaudacionTotal());
 
         } else {
             throw new RuntimeErrorException(null, "No existe el asiento");

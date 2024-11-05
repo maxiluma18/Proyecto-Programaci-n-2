@@ -22,7 +22,7 @@ public class VueloNacional extends VueloPublico {
             return 0;
 
         int totalAsientos = cantAsientos[0].length + cantAsientos[1].length;
-        if (pasajerosPorDNI.size() >= totalAsientos - 1) {
+        if (pasajerosPorDNI.size() >= totalAsientos) {
             return 0;
         }
 
