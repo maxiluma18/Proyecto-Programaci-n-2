@@ -1,5 +1,7 @@
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.management.RuntimeErrorException;
@@ -8,8 +10,6 @@ public class VueloInternacional extends VueloPublico {
     private double valorRefrigerio;
     private int cantRefrigerios;
     private String[] escalas;
-    private Map<String, Double> recaudacionPorDestino;
-    
 
     public VueloInternacional(String origen, String destino, String fecha, int tripulantes,
             double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos,
@@ -23,13 +23,12 @@ public class VueloInternacional extends VueloPublico {
         this.cantAsientos[0] = new int[cantAsientos[0]];
         this.cantAsientos[1] = new int[cantAsientos[1]];
         this.cantAsientos[2] = new int[cantAsientos[2]];
-        this.recaudacionPorDestino = new HashMap<>();
-        
+
     }
 
     @Override
     public int venderPasaje(int dni, int nroAsiento, boolean aOcupar, String codVuelo) {
-        if (nroAsiento <= 0){
+        if (nroAsiento <= 0) {
             return 0;
         }
         int totalAsientos = cantAsientos[0].length + cantAsientos[1].length + cantAsientos[2].length;
@@ -40,15 +39,15 @@ public class VueloInternacional extends VueloPublico {
         String clase = determinarClase(nroAsiento);
 
         if (ocuparAsiento(dni, nroAsiento, codPasaje, aOcupar, codVuelo)) {
-            double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
+            double precioPasaje = (calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios)) * 1.2;
             actualizarRecaudacion(precioPasaje);
-
             return codPasaje;
         }
         return 0;
     }
 
-    private String determinarClase(int nroAsiento) {
+    @Override
+    protected String determinarClase(int nroAsiento) {
         if (nroAsiento <= cantAsientos[0].length) {
             return "Turista";
         } else if (nroAsiento <= cantAsientos[0].length + cantAsientos[1].length) {
@@ -61,7 +60,6 @@ public class VueloInternacional extends VueloPublico {
     @Override
     protected boolean ocuparAsiento(int dni, int nroAsiento, int codPasaje, boolean aOcupar, String codVuelo) {
         if (nroAsiento <= cantAsientos[0].length) {
-            // Asiento Turista
             if (cantAsientos[0][nroAsiento - 1] == 0) {
                 cantAsientos[0][nroAsiento - 1] = 1;
                 pasajerosPorDNI.put(dni, new Pasaje(dni, nroAsiento, "Turista", aOcupar, codVuelo, codPasaje));
@@ -71,7 +69,6 @@ public class VueloInternacional extends VueloPublico {
                 return true;
             }
         } else if (nroAsiento <= cantAsientos[0].length + cantAsientos[1].length) {
-            // Asiento Ejecutivo
             int asientoEjecutivo = nroAsiento - cantAsientos[0].length - 1;
             if (cantAsientos[1][asientoEjecutivo] == 0) {
                 cantAsientos[1][asientoEjecutivo] = 1;
@@ -82,7 +79,6 @@ public class VueloInternacional extends VueloPublico {
                 return true;
             }
         } else if (nroAsiento <= cantAsientos[0].length + cantAsientos[1].length + cantAsientos[2].length) {
-            // Asiento Primera Clase
             int asientoPrimeraClase = nroAsiento - cantAsientos[0].length - cantAsientos[1].length - 1;
             if (cantAsientos[2][asientoPrimeraClase] == 0) {
                 cantAsientos[2][asientoPrimeraClase] = 1;
@@ -100,7 +96,7 @@ public class VueloInternacional extends VueloPublico {
     public void cancelarPasaje(int dni, int nroAsiento) {
         int codPasaje = pasajerosPorDNI.get(dni).getCodPasaje();
         pasajerosPorCodPasaje.remove(codPasaje);
-        
+
         int cantidadPasajes = contadorPasajesPorDNI.get(dni);
         if (cantidadPasajes == 0) {
             pasajerosPorDNI.remove(dni);
@@ -114,19 +110,18 @@ public class VueloInternacional extends VueloPublico {
         if (nroAsiento <= lenCantAsiento0) {
             cantAsientos[0][nroAsiento - 1] = 0;
             String clase = determinarClase(nroAsiento);
-            double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
+            double precioPasaje = (calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios)) * 1.2;
             actualizarRecaudacion(-precioPasaje);
         } else if (nroAsiento <= lenCantAsiento01) {
             cantAsientos[1][nroAsiento - lenCantAsiento0 - 1] = 0;
             String clase = determinarClase(nroAsiento);
-            double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
+            double precioPasaje = (calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios)) * 1.2;
             actualizarRecaudacion(-precioPasaje);
         } else if (nroAsiento <= lenCantAsiento012) {
             cantAsientos[2][nroAsiento - lenCantAsiento01 - 1] = 0;
             String clase = determinarClase(nroAsiento);
-            double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
+            double precioPasaje = (calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios)) * 1.2;
             actualizarRecaudacion(-precioPasaje);
-            //recaudacionPorDestino.put(vueloInternacional.getDestino(), recaudacionPorDestino.getOrDefault(vueloInternacional.getDestino(), 0.0) + vueloInternacional.getRecaudacionTotal());
 
         } else {
             throw new RuntimeErrorException(null, "No existe el asiento");
@@ -150,22 +145,55 @@ public class VueloInternacional extends VueloPublico {
         if (nroAsiento <= lenCantAsiento0) {
             cantAsientos[0][nroAsiento - 1] = 0;
             String clase = determinarClase(nroAsiento);
-            double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
+            double precioPasaje = (calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios)) * 1.2;
             actualizarRecaudacion(-precioPasaje);
         } else if (nroAsiento <= lenCantAsiento01) {
             cantAsientos[1][nroAsiento - lenCantAsiento0 - 1] = 0;
             String clase = determinarClase(nroAsiento);
-            double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
+            double precioPasaje = (calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios)) * 1.2;
             actualizarRecaudacion(-precioPasaje);
         } else if (nroAsiento <= lenCantAsiento012) {
             cantAsientos[2][nroAsiento - lenCantAsiento01 - 1] = 0;
             String clase = determinarClase(nroAsiento);
-            double precioPasaje = calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios);
+            double precioPasaje = (calcularPrecioPasaje(clase) + (valorRefrigerio * cantRefrigerios)) * 1.2;
             actualizarRecaudacion(-precioPasaje);
 
         } else {
             throw new RuntimeErrorException(null, "No existe el asiento");
         }
+    }
+
+    @Override
+    public int asignarAsiento(int dni, int nroAsiento, String clase, boolean ocupado) {
+        int codPasaje = codigoPasajeIncremental++;
+        String codVuelo = this.getCodigo();
+
+        List<String> clasesDisponibles = new ArrayList<>();
+        if (clase.equals("Turista")) {
+            clasesDisponibles.add("Turista");
+            clasesDisponibles.add("Ejecutivo");
+            clasesDisponibles.add("Primera Clase");
+        } else if (clase.equals("Ejecutivo")) {
+            clasesDisponibles.add("Ejecutivo");
+            clasesDisponibles.add("Primera Clase");
+        } else if (clase.equals("Primera Clase")) {
+            clasesDisponibles.add("Primera Clase");
+        } else {
+            throw new RuntimeErrorException(null, "Clase Inexistente");
+        }
+
+        for (String claseActual : clasesDisponibles) {
+            int asientoDisponible = encontrarAsientoDisponible(claseActual);
+            if (asientoDisponible != -1) {
+                if (ocuparAsiento(dni, asientoDisponible, codPasaje, ocupado, codVuelo)) {
+                    double precioPasaje = (calcularPrecioPasaje(clase) + valorRefrigerio) * 1.2;
+                    actualizarRecaudacion(precioPasaje);
+                    return codPasaje;
+                }
+            }
+        }
+
+        return -1;
     }
 
     // GETTERS
@@ -175,6 +203,22 @@ public class VueloInternacional extends VueloPublico {
 
     public String getTipoVuelo() {
         return "INTERNACIONAL";
+    }
+
+    @Override
+    protected double getClaseSeccion(String clase) {
+        double cantRefrigerio = cantRefrigerios * valorRefrigerio;
+        if (clase.equals("Turista")) {
+            double cant = precios[0] + cantRefrigerio;
+            return cant * 1.2;
+        } else if (clase.equals("Ejecutivo")) {
+            double cant = precios[1] + cantRefrigerio;
+            return cant * 1.2;
+        } else {
+            double cant = precios[2] + cantRefrigerio;
+            return cant * 1.2;
+        }
+
     }
 
     public Map<Integer, String> getAsientosDisponibles() {
