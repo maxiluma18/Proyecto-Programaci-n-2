@@ -43,9 +43,9 @@ public class VueloPrivado extends Vuelo {
         return String.valueOf(contadorVuelos);
     }
 
-    protected void recaudacionDestino(String destino){
-        recaudacionPorDestino.put(destino, this.recaudacionTotal);
-    }
+    // protected void recaudacionDestino(String destino){
+    //     recaudacionPorDestino.put(destino, this.recaudacionTotal);
+    // }
 
     //GETTERS
     public String getCodigo() {

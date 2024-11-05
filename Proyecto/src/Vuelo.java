@@ -23,14 +23,21 @@ public class Vuelo {
 
         return !fechaVuelo.isBefore(fechaParametro) && !fechaVuelo.isAfter(fechaMas7Dias);
     }
-    //GETTERS
+
+    // GETTERS
     public String getOrigen() {
         return origen;
     }
+
     public String getDestino() {
         return destino;
     }
+
     protected String getFecha() {
         return fecha;
+    }
+
+    protected int getTripulantes() {
+        return tripulantes;
     }
 }
