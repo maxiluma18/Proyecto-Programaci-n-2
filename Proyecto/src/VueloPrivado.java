@@ -12,6 +12,8 @@ public class VueloPrivado extends Vuelo {
     public VueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,
             int dniComprador, int[] acompaniantes) {
         super(origen, destino, fecha, tripulantes);
+        validacionOrigenDestinoNacional(origen, destino);
+
         this.precio = precio;
         this.dniComprador = dniComprador;
         this.acompaniantes = acompaniantes;
@@ -37,6 +39,12 @@ public class VueloPrivado extends Vuelo {
     private static String generarCodigoVuelo() {
         contadorVuelos++;
         return String.valueOf(contadorVuelos);
+    }
+
+    public void validacionOrigenDestinoNacional(String origen, String destino) {
+        if (origen == null || origen.isEmpty() || destino == null || destino.isEmpty()) {
+            throw new RuntimeException("El origen y destino no pueden ser nulos o vacíos");
+        }
     }
 
     // GETTERS

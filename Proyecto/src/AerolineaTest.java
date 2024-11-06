@@ -219,7 +219,7 @@ public class AerolineaTest {
 		double[] precios = { 15000.0, 30000.0, 50000.0 };
 		int[] cantAsientos = { 100, 30, 10 };
 		String[] escalas = { "JFK", "Charles de Gaulle" };
-		String codVuelo = aerolinea.registrarVueloPublicoInternacional("Ezeiza", "JFK", "15/12/2024", 8, 2000, 3,
+		String codVuelo = aerolinea.registrarVueloPublicoInternacional("Ezeiza", "Barajas", "15/12/2024", 8, 2000, 3,
 				precios, cantAsientos, escalas);
 
 		for (int i = 1; i < 141; i++) {
@@ -234,7 +234,7 @@ public class AerolineaTest {
 		// 140 pasajeros * 3 refrigerios * 2000 cada refrigerio
 		// y por ultimo sumo el 20 porciento de impuestos.
 		double recaudacionEsperada = 4488000.0;
-		assertEquals(recaudacionEsperada, aerolinea.totalRecaudado("JFK"), 0.1);
+		assertEquals(recaudacionEsperada, aerolinea.totalRecaudado("Barajas"), 0.1);
 	}
 
 	@Test

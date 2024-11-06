@@ -15,6 +15,8 @@ public class VueloInternacional extends VueloPublico {
             double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos,
             String[] escalas) {
         super(origen, destino, fecha, tripulantes, cantAsientos);
+        validacionPreciosCantAsientosInternacional(precios, cantAsientos);
+        validacionCantRefrigeriosInternacional(cantRefrigerios);
         this.valorRefrigerio = valorRefrigerio;
         this.cantRefrigerios = cantRefrigerios;
         this.escalas = escalas.length > 0 ? escalas : null;
@@ -219,6 +221,18 @@ public class VueloInternacional extends VueloPublico {
             return cant * 1.2;
         }
 
+    }
+
+    public void validacionPreciosCantAsientosInternacional(double[] precios, int[] cantAsientos) {
+        if (precios.length != 3 || cantAsientos.length != 3) {
+            throw new RuntimeException("Los arrays de precios y asientos deben tener longitud 3");
+        }
+    }
+
+    public void validacionCantRefrigeriosInternacional(int cantRefrigerios) {
+        if (cantRefrigerios != 3) {
+            throw new RuntimeException("La cantidad de refrigerios deben ser 3");
+        }
     }
 
     public Map<Integer, String> getAsientosDisponibles() {

@@ -19,6 +19,7 @@ public abstract class VueloPublico extends Vuelo {
 
     public VueloPublico(String origen, String destino, String fecha, int tripulantes, int[] cantAsientos) {
         super(origen, destino, fecha, tripulantes);
+        validacionOrigenDestinoNacional(origen, destino);
         this.codigo = generarCodigoVuelo() + "-PUB";
         this.pasajerosPorDNI = new HashMap<>();
         this.pasajerosPorCodPasaje = new HashMap<>();
@@ -96,7 +97,7 @@ public abstract class VueloPublico extends Vuelo {
     }
 
     public boolean tienePasaje(int dni) {
-        return pasajerosPorDNI.containsKey(dni);
+        return pasajerosPorDNI.containsKey(dni); // O(1)
     }
 
     public boolean tienePasaje(int dni, int codVuelo) {
@@ -211,6 +212,12 @@ public abstract class VueloPublico extends Vuelo {
             return cantAsientos[1][nroAsiento - cantAsientos[0].length - 1] == 1;
         } else {
             return cantAsientos[2][nroAsiento - cantAsientos[0].length - cantAsientos[1].length - 1] == 1;
+        }
+    }
+
+    public void validacionOrigenDestinoNacional(String origen, String destino) {
+        if (origen == null || origen.isEmpty() || destino == null || destino.isEmpty()) {
+            throw new RuntimeException("El origen y destino no pueden ser nulos o vacíos");
         }
     }
 

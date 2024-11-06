@@ -17,6 +17,7 @@ public class Aerolinea implements IAerolinea {
 
     // Funcion 1
     public Aerolinea(String nombre, String cuit) {
+        validacionNombreCuit(nombre, cuit);
         this.nombre = nombre;
         this.cuit = cuit;
         this.aeropuertos = new HashMap<>();
@@ -30,11 +31,8 @@ public class Aerolinea implements IAerolinea {
         if (clientes.containsKey(dni)) {
             throw new RuntimeErrorException(null, "Cliente ya existente");
         }
-        validacionDni(dni);
-        validacionNombre(nombre);
-        validacionTelefono(telefono);
-
         Cliente nuevoCliente = new Cliente(dni, nombre, telefono);
+
         clientes.put(dni, nuevoCliente);
     }
 
@@ -45,11 +43,6 @@ public class Aerolinea implements IAerolinea {
             throw new RuntimeErrorException(null, "Aeropuerto ya existente");
         }
 
-        validacionNombre(nombre);
-        validacionPais(pais);
-        validacionProvincia(provincia);
-        validacionDireccion(direccion);
-
         Aeropuerto nuevoAeropuerto = new Aeropuerto(nombre, pais, provincia, direccion);
         aeropuertos.put(nombre, nuevoAeropuerto);
     }
@@ -57,11 +50,14 @@ public class Aerolinea implements IAerolinea {
     // Funcion 4
     public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
             double valorRefrigerio, double[] precios, int[] cantAsientos) {
-        validacionOrigenDestinoNacional(origen, destino);
-        validacionPreciosCantAsientosNacional(precios, cantAsientos);
-        validacionFecha(fecha);
-        validacionTripulantes(tripulantes);
-        validacionRefrigerio(valorRefrigerio);
+        if (!aeropuertos.containsKey(origen) || !aeropuertos.containsKey(destino)) {
+            throw new RuntimeException("Origen o destino no registrados");
+        }
+        if (!aeropuertos.get(origen).getPais().equals("Argentina") ||
+                !aeropuertos.get(destino).getPais().equals("Argentina")) {
+            throw new RuntimeException("Los aeropuertos deben ser nacionales");
+        }
+
         if (origen == destino) {
             throw new RuntimeErrorException(null, "Origen y destino no pueden ser iguales");
         }
@@ -74,7 +70,6 @@ public class Aerolinea implements IAerolinea {
                 recaudacionPorDestino.getOrDefault(destino, 0.0) + nuevoVuelo.getRecaudacionTotal());
         String codigoVuelo = nuevoVuelo.getCodigo();
         Vuelos.put(codigoVuelo, nuevoVuelo);
-        System.out.println("Registrando vuelo nacional con código: " + codigoVuelo);
 
         return codigoVuelo;
     }
@@ -82,13 +77,10 @@ public class Aerolinea implements IAerolinea {
     // Funcion 5
     public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
             double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) {
-        validacionOrigenDestinoInternacional(origen, destino);
-        validacionFecha(fecha);
-        validacionTripulantes(tripulantes);
-        validacionRefrigerio(cantRefrigerios);
-        validacionPreciosCantAsientosInternacional(precios, cantAsientos);
+        if (!aeropuertos.containsKey(origen) || !aeropuertos.containsKey(destino)) {
+            throw new RuntimeException("Origen o destino no registrados");
+        }
         validacionEscalas(escalas);
-        validacionCantRefrigeriosInternacional(cantRefrigerios);
         if (!fechaValida(fecha)) {
             throw new RuntimeErrorException(null, "Fecha invalida");
         }
@@ -99,8 +91,6 @@ public class Aerolinea implements IAerolinea {
                 cantRefrigerios, precios, cantAsientos, escalas);
         recaudacionPorDestino.put(destino,
                 recaudacionPorDestino.getOrDefault(destino, 0.0) + nuevoVuelo.getRecaudacionTotal());
-        System.out.println(destino);
-        System.out.println(nuevoVuelo.getRecaudacionTotal());
         String codigoVuelo = nuevoVuelo.getCodigo();
         Vuelos.put(codigoVuelo, nuevoVuelo);
         return codigoVuelo;
@@ -109,7 +99,6 @@ public class Aerolinea implements IAerolinea {
     // Funcion 6 y 10
     public String VenderVueloPrivado(String origen, String destino, String fecha, int tripulantes, double precio,
             int dniComprador, int[] acompaniantes) {
-        validacionOrigenDestinoNacional(origen, destino);
         validacionAcompaniantes(acompaniantes);
         validacionDniComprador(dniComprador);
         for (int i = 1; i < acompaniantes.length; i++) {
@@ -246,11 +235,11 @@ public class Aerolinea implements IAerolinea {
         Cliente cl = clientes.get(dni);
         if (cl == null) {
             throw new RuntimeException("El cliente no está registrado");
-        }
+        } // 1
         Vuelo v = Vuelos.get(codVuelo);
         if (v == null) {
             throw new RuntimeException("El vuelo no existe");
-        }
+        } // 1
         if (v instanceof VueloInternacional) {
             VueloInternacional vueloInternacional = (VueloInternacional) v;
 
@@ -262,7 +251,7 @@ public class Aerolinea implements IAerolinea {
                         recaudacionPorDestino.get(vueloInternacional.getDestino()) - precioPasaje);
                 if (cl.esPasajero()) {
                     cl.cambiarEstado(false);
-                }
+                } //
             } else {
                 throw new RuntimeException("El pasaje no existe");
             }
@@ -397,7 +386,6 @@ public class Aerolinea implements IAerolinea {
                             String codVueloNuevo = vueloInternacional.getCodigo();
                             int dniCliente = clientes.get(p.getDni()).getDni();
                             int nroAsiento = p.getNroAsiento();
-                            System.out.println(p.getClase());
                             if (vueloInternacional.asignarAsiento(p.getDni(),
                                     p.getNroAsiento(),
                                     p.getClase(),
@@ -456,18 +444,12 @@ public class Aerolinea implements IAerolinea {
 
     // Funcion 14
     public double totalRecaudado(String destino) {
-        System.out.println("AAXAXAXA");
-        System.out.println("Destino solicitado: " + destino);
-        System.out.println("Contenido de recaudacionPorDestino: " + recaudacionPorDestino);
 
         if (recaudacionPorDestino.get(destino) == null) {
-            System.out.println("No se encontró el destino, devolviendo 0.0");
             return 0.0;
         }
 
         double valor = recaudacionPorDestino.get(destino);
-        System.out.println("Valor encontrado para " + destino + ": " + valor);
-
         return valor;
     }
 
@@ -521,93 +503,6 @@ public class Aerolinea implements IAerolinea {
     }
 
     // * IREPS------------------
-    public void validacionDni(int dni) {
-        if (dni <= 0) {
-            throw new IllegalArgumentException("El Dni debe ser positivo");
-        }
-    }
-
-    public void validacionPreciosCantAsientosNacional(double[] precios, int[] cantAsientos) {
-        if (precios.length != 2 || cantAsientos.length != 2) {
-            throw new RuntimeException("Los arrays de precios y asientos deben tener longitud 2");
-        }
-    }
-
-    public void validacionPreciosCantAsientosInternacional(double[] precios, int[] cantAsientos) {
-        if (precios.length != 3 || cantAsientos.length != 3) {
-            throw new RuntimeException("Los arrays de precios y asientos deben tener longitud 3");
-        }
-    }
-
-    public void validacionNombre(String nombre) {
-        if (nombre == null || nombre.isEmpty() || nombre.length() <= 2) {
-            throw new RuntimeErrorException(null, "Nombre de aeropuerto no puede ser nulo o vacio");
-        }
-    }
-
-    public void validacionPais(String pais) {
-        if (pais == null || pais.isEmpty() || pais.length() <= 2) {
-            throw new RuntimeErrorException(null, "el pais no puede ser nulo o vacio");
-        }
-    }
-
-    public void validacionProvincia(String provincia) {
-        if (provincia == null || provincia.isEmpty() || provincia.length() <= 2) {
-            throw new RuntimeErrorException(null, "La provincia no puede ser nulo o vacio");
-        }
-    }
-
-    public void validacionDireccion(String direccion) {
-        if (direccion == null || direccion.isEmpty() || direccion.length() <= 2) {
-            throw new RuntimeErrorException(null, "La direccion no puede ser nulo o vacio");
-        }
-    }
-
-    public void validacionTelefono(String telefono) {
-        if (telefono == null || telefono.isEmpty() || telefono.length() < 8) {
-            throw new IllegalArgumentException("El dato telefono debe ser valido");
-        }
-    }
-
-    public void validacionOrigenDestinoNacional(String origen, String destino) {
-        if (origen == null || origen.isEmpty() || destino == null || destino.isEmpty()) {
-            throw new RuntimeException("El origen y destino no pueden ser nulos o vacíos");
-        }
-        if (!aeropuertos.containsKey(origen) || !aeropuertos.containsKey(destino)) {
-            throw new RuntimeException("Origen o destino no registrados");
-        }
-        if (!aeropuertos.get(origen).getPais().equals("Argentina") ||
-                !aeropuertos.get(destino).getPais().equals("Argentina")) {
-            throw new RuntimeException("Los aeropuertos deben ser nacionales");
-        }
-    }
-
-    public void validacionOrigenDestinoInternacional(String origen, String destino) {
-        if (origen == null || origen.isEmpty() || destino == null || destino.isEmpty()) {
-            throw new RuntimeException("El origen y destino no pueden ser nulos o vacíos");
-        }
-        if (!aeropuertos.containsKey(origen) || !aeropuertos.containsKey(destino)) {
-            throw new RuntimeException("Origen o destino no registrados");
-        }
-    }
-
-    public void validacionFecha(String fecha) {
-        if (fecha == null || fecha.isEmpty()) {
-            throw new RuntimeErrorException(null, "La fecha no puede ser nula o vacia");
-        }
-    }
-
-    public void validacionTripulantes(int tripulantes) {
-        if (tripulantes <= 0) {
-            throw new IllegalArgumentException("La cantidad de tripulantes debe ser positiva");
-        }
-    }
-
-    public void validacionRefrigerio(double refrigerio) {
-        if (refrigerio <= 0) {
-            throw new RuntimeException("El valor del refrigerio debe ser positivo");
-        }
-    }
 
     public void validacionEscalas(String[] escalas) {
         if (escalas.length > 0) {
@@ -629,21 +524,23 @@ public class Aerolinea implements IAerolinea {
         }
     }
 
-    public void validacionCantRefrigeriosInternacional(int cantRefrigerios) {
-        if (cantRefrigerios != 3) {
-            throw new RuntimeException("La cantidad de refrigerios deben ser 3");
-        }
-    }
-
     public void validacionAcompaniantes(int[] acompaniantes) {
-        if (acompaniantes.length < 0) {
-            throw new RuntimeErrorException(null, "Error en los datos");
+        for (int i = 0; i < acompaniantes.length; i++) {
+            if (!clientes.containsKey(acompaniantes[i])) {
+                throw new RuntimeException("El acompaniante no existe");
+            }
         }
     }
 
     public void validacionDniComprador(int dniComprador) {
         if (!clientes.containsKey(dniComprador)) {
             throw new RuntimeException("El cliente no esta registrado");
+        }
+    }
+
+    public void validacionNombreCuit(String nombre, String cuit) {
+        if (nombre.isEmpty() || cuit.isEmpty() || nombre.length() < 3 || cuit.length() < 10) {
+            throw new RuntimeException("El nombre y el cuit no pueden estar vacios");
         }
     }
 
