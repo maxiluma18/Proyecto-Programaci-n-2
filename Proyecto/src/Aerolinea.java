@@ -552,4 +552,13 @@ public class Aerolinea implements IAerolinea {
     public String getCuit() {
         return cuit;
     }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Aerolinea: ").append(nombre).append("\n");
+        sb.append("Cuit: ").append(cuit).append("\n");
+        sb.append("Clientes: ").append(clientes.size()).append("\n");
+        sb.append("Vuelos: ").append(Vuelos.size()).append("\n");
+        return sb.toString();
+    }
 }
