@@ -97,11 +97,7 @@ public abstract class VueloPublico extends Vuelo {
     }
 
     public boolean tienePasaje(int dni) {
-        return pasajerosPorDNI.containsKey(dni); // O(1)
-    }
-
-    public boolean tienePasaje(int dni, int codVuelo) {
-        return pasajerosPorDNI.containsKey(dni) && pasajerosPorCodPasaje.containsKey(dni);
+        return pasajerosPorDNI.containsKey(dni);
     }
 
     public void cancelarPasaje(int dni, int nroAsiento) {

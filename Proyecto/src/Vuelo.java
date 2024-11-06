@@ -4,7 +4,7 @@ import java.time.format.DateTimeFormatter;
 
 import javax.management.RuntimeErrorException;
 
-public class Vuelo {
+public abstract class Vuelo {
     private String origen;
     private String destino;
     private String fecha;
