@@ -61,14 +61,14 @@ public class AerolineaTest {
 	public void ej04_registrarVueloPublicoNacional_destinoNoRegistrado_exception() {
 		double[] precios = { 5000.0, 10000.0 };
 		int[] cantAsientos = { 150, 20 };
-		aerolinea.registrarVueloPublicoNacional("Aeroparque", "Jujuy", "15/12/2024", 6, 2000, precios, cantAsientos);
+		aerolinea.registrarVueloPublicoNacional("Aeroparque", "Jujuy", "15/12/2025", 6, 2000, precios, cantAsientos);
 	}
 
 	@Test
 	public void ej04_registrarVueloPublicoNacional_vueloRegistrado() {
 		double[] precios = { 5000.0, 10000.0 };
 		int[] cantAsientos = { 150, 20 };
-		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2024", 6, 2000,
+		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2025", 6, 2000,
 				precios, cantAsientos);
 		assertNotNull(codVuelo);
 		assertTrue(codVuelo.endsWith("-PUB"));
@@ -110,7 +110,7 @@ public class AerolineaTest {
 		aerolinea.registrarCliente(12345679, "Porthos", "011-2345-6779");
 		aerolinea.registrarCliente(12345680, "Aramis", "011-2345-6769");
 
-		String codVuelo = aerolinea.VenderVueloPrivado("Ezeiza", "Ushuaia", "10/12/2024", 5, 500000.0,
+		String codVuelo = aerolinea.VenderVueloPrivado("Ezeiza", "Ushuaia", "10/12/2025", 5, 500000.0,
 				12345678, acompaniantes);
 		assertNotNull(codVuelo);
 		assertTrue(codVuelo.endsWith("-PRI"));
@@ -131,7 +131,7 @@ public class AerolineaTest {
 	public void ej08_venderPasaje_clienteNoRegistrado_exception() {
 		double[] precios = { 5000.0, 10000.0 };
 		int[] cantAsientos = { 150, 20 };
-		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2024", 5, 2000,
+		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2025", 5, 2000,
 				precios, cantAsientos);
 		aerolinea.venderPasaje(87654321, codVuelo, 1, true);
 	}
@@ -141,7 +141,7 @@ public class AerolineaTest {
 		aerolinea.registrarCliente(12345678, "Juan Perez", "011-1234-5678");
 		double[] precios = { 5000.0, 10000.0 };
 		int[] cantAsientos = { 150, 20 };
-		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2024", 6, 2000,
+		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2025", 6, 2000,
 				precios, cantAsientos);
 		int codPasaje = aerolinea.venderPasaje(12345678, codVuelo, 1, true);
 		assertTrue(codPasaje > 0);
@@ -151,9 +151,9 @@ public class AerolineaTest {
 	public void ej11_consultarVuelosSimilares_vuelosNoEncontrados() {
 		double[] precios = { 5000.0, 10000.0 };
 		int[] cantAsientos = { 150, 20 };
-		aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2024", 5, 3000, precios,
+		aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2025", 5, 3000, precios,
 				cantAsientos);
-		List<String> vuelos = aerolinea.consultarVuelosSimilares("Aeroparque", "Bariloche", "10/12/2024");
+		List<String> vuelos = aerolinea.consultarVuelosSimilares("Aeroparque", "Bariloche", "10/12/2025");
 		assertNotNull(vuelos);
 		assertFalse(vuelos.isEmpty());
 	}
@@ -166,12 +166,12 @@ public class AerolineaTest {
 		aerolinea.registrarCliente(dni, nombre, telefono);
 		double[] precios = { 5000.0, 10000.0 };
 		int[] cantAsientos = { 150, 20 };
-		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2024", 6, 2000,
+		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2025", 6, 2000,
 				precios, cantAsientos);
 		int codPasaje = aerolinea.venderPasaje(dni, codVuelo, 1, true);
 		assertTrue(codPasaje > 0);
 
-		String codVueloNuevo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "16/12/2024", 6, 2000,
+		String codVueloNuevo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "16/12/2025", 6, 2000,
 				precios, cantAsientos);
 
 		String registroEsperado = String.format("%d - %s - %s - %s", dni, nombre, telefono, codVueloNuevo);
@@ -200,7 +200,7 @@ public class AerolineaTest {
 		}
 
 		// El cliente compra un vuelo privado de Aeroparque a Bariloche para 40 personas
-		String fechaVueloPrivado = "10/11/2024";
+		String fechaVueloPrivado = "10/11/2025";
 		double precioVueloPrivado = 500000.0;
 		// porque Necesita 3 aviones para poder llevar a los 40 pasajeros y se le suma
 		// el 30% de impuestos.
@@ -218,7 +218,7 @@ public class AerolineaTest {
 		double[] precios = { 15000.0, 30000.0, 50000.0 };
 		int[] cantAsientos = { 100, 30, 10 };
 		String[] escalas = { "JFK", "Charles de Gaulle" };
-		String codVuelo = aerolinea.registrarVueloPublicoInternacional("Ezeiza", "Barajas", "15/12/2024", 8, 2000, 3,
+		String codVuelo = aerolinea.registrarVueloPublicoInternacional("Ezeiza", "Barajas", "15/12/2025", 8, 2000, 3,
 				precios, cantAsientos, escalas);
 
 		for (int i = 1; i < 141; i++) {
@@ -240,10 +240,10 @@ public class AerolineaTest {
 	public void ej15_detalleVuelo_OK() {
 		double[] precios = { 5000.0, 10000.0 };
 		int[] cantAsientos = { 150, 20 };
-		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2024", 6, 2000,
+		String codVuelo = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche", "15/12/2025", 6, 2000,
 				precios, cantAsientos);
 
-		String esperado = String.format("%s - Aeroparque - Bariloche - 15/12/2024 - NACIONAL", codVuelo);
+		String esperado = String.format("%s - Aeroparque - Bariloche - 15/12/2025 - NACIONAL", codVuelo);
 		assertEquals(esperado, aerolinea.detalleDeVuelo(codVuelo));
 
 		// ----------------------

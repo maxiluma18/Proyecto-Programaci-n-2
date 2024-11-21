@@ -276,43 +276,46 @@ public class Aerolinea implements IAerolinea {
     }
 
     // Funcion 12-B NO Complejidad O(1)
-    public void cancelarPasaje(int dni, int codPasaje) {
-        Cliente cl = clientes.get(dni);
-        if (cl == null) {
-            throw new RuntimeException("El cliente no está registrado");
-        }
-        for (Vuelo vuelo : Vuelos.values()) {
-            if (vuelo instanceof VueloNacional && ((VueloNacional) vuelo).tienePasaje(dni)) {
-                VueloNacional vueloNacional = (VueloNacional) vuelo;
+    // public void cancelarPasaje(int dni, int codPasaje) {
+    // Cliente cl = clientes.get(dni);
+    // if (cl == null) {
+    // throw new RuntimeException("El cliente no está registrado");
+    // }
+    // for (Vuelo vuelo : Vuelos.values()) {
+    // if (vuelo instanceof VueloNacional && ((VueloNacional)
+    // vuelo).tienePasaje(dni)) {
+    // VueloNacional vueloNacional = (VueloNacional) vuelo;
 
-                int nroAsiento = vueloNacional.getPasajerosporCodPasaje().get(codPasaje).getNroAsiento();
-                vueloNacional.cancelarPasaje(dni, nroAsiento, codPasaje);
-                String clase = vueloNacional.determinarClase(nroAsiento);
-                double precioPasaje = vueloNacional.getClaseSeccion(clase);
-                recaudacionPorDestino.put(vueloNacional.getDestino(),
-                        recaudacionPorDestino.get(vueloNacional.getDestino()) - precioPasaje);
-                if (cl.esPasajero()) {
-                    cl.cambiarEstado(false);
-                }
-                return;
+    // int nroAsiento =
+    // vueloNacional.getPasajerosporCodPasaje().get(codPasaje).getNroAsiento();
+    // vueloNacional.cancelarPasaje(dni, nroAsiento);
+    // String clase = vueloNacional.determinarClase(nroAsiento);
+    // double precioPasaje = vueloNacional.getClaseSeccion(clase);
+    // recaudacionPorDestino.put(vueloNacional.getDestino(),
+    // recaudacionPorDestino.get(vueloNacional.getDestino()) - precioPasaje);
+    // if (cl.esPasajero()) {
+    // cl.cambiarEstado(false);
+    // }
+    // return;
 
-            } else if (vuelo instanceof VueloInternacional
-                    && ((VueloInternacional) vuelo).tienePasaje(dni)) {
-                VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
+    // } else if (vuelo instanceof VueloInternacional
+    // && ((VueloInternacional) vuelo).tienePasaje(dni)) {
+    // VueloInternacional vueloInternacional = (VueloInternacional) vuelo;
 
-                int nroAsiento = vueloInternacional.getPasajerosporCodPasaje().get(codPasaje).getNroAsiento();
-                vueloInternacional.cancelarPasaje(dni, nroAsiento, codPasaje);
-                String clase = vueloInternacional.determinarClase(nroAsiento);
-                double precioPasaje = vueloInternacional.getClaseSeccion(clase);
-                recaudacionPorDestino.put(vueloInternacional.getDestino(),
-                        recaudacionPorDestino.get(vueloInternacional.getDestino()) - precioPasaje);
-                if (cl.esPasajero()) {
-                    cl.cambiarEstado(false);
-                }
-                return;
-            }
-        }
-    }
+    // int nroAsiento =
+    // vueloInternacional.getPasajerosporCodPasaje().get(codPasaje).getNroAsiento();
+    // vueloInternacional.cancelarPasaje(dni, nroAsiento);
+    // String clase = vueloInternacional.determinarClase(nroAsiento);
+    // double precioPasaje = vueloInternacional.getClaseSeccion(clase);
+    // recaudacionPorDestino.put(vueloInternacional.getDestino(),
+    // recaudacionPorDestino.get(vueloInternacional.getDestino()) - precioPasaje);
+    // if (cl.esPasajero()) {
+    // cl.cambiarEstado(false);
+    // }
+    // return;
+    // }
+    // }
+    // }
 
     // Funcion 13
     public List<String> cancelarVuelo(String codVuelo) {
@@ -330,7 +333,7 @@ public class Aerolinea implements IAerolinea {
         VueloPublico vueloPublico = (VueloPublico) vuelo;
         boolean encontroVueloValido = false;
 
-        Map<Integer, Pasaje> pasajerosVuelo = new HashMap<>(vueloPublico.getPasajerosporCodPasaje());
+        Map<Integer, Pasaje> pasajerosVuelo = new HashMap<>(vueloPublico.getAsientos());
 
         if (pasajerosVuelo.size() > 0) {
             for (Vuelo v : new ArrayList<>(Vuelos.values())) {

@@ -38,7 +38,7 @@ public class Principal {
                 double[] preciosNacional = { 5000.0, 10000.0 };
                 int[] cantAsientosNacional = { 150, 20 };
                 String codVueloNacional = aerolinea.registrarVueloPublicoNacional("Aeroparque", "Bariloche",
-                                "15/11/2024", 8,
+                                "15/11/2025", 8,
                                 5000, preciosNacional, cantAsientosNacional);
 
                 // Registrar un vuelo internacional con escalas
@@ -47,7 +47,7 @@ public class Principal {
                 String[] escalas = { "Guarulhos", "JFK" };
                 String codVueloInternacional = aerolinea.registrarVueloPublicoInternacional("Ezeiza",
                                 "Charles de Gaulle",
-                                "20/11/2024", 12, 6000, 3, preciosInternacional, cantAsientosInternacional, escalas);
+                                "20/11/2025", 12, 6000, 3, preciosInternacional, cantAsientosInternacional, escalas);
 
                 // Vender pasajes
                 int codPasaje1 = aerolinea.venderPasaje(12345678, codVueloNacional, 5, true);
@@ -79,8 +79,8 @@ public class Principal {
 
                 // Consultar vuelos similares
                 List<String> vuelosSimilares = aerolinea.consultarVuelosSimilares("Aeroparque", "Bariloche",
-                                "15/11/2024");
-                System.out.println("Vuelos similares al 15/11/2024 de Aeroparque a Bariloche: " + vuelosSimilares);
+                                "15/11/2025");
+                System.out.println("Vuelos similares al 15/11/2025 de Aeroparque a Bariloche: " + vuelosSimilares);
 
                 // >>>>>>>> simulacion vuelo privado
                 // Registrar cliente principal que contratará el vuelo privado
@@ -92,35 +92,49 @@ public class Principal {
                         acompaniantes[i] = 10000000 + i; // Simplemente como ejemplo
                         aerolinea.registrarCliente(acompaniantes[i], "Acompañante " + (i + 1),
                                         "011-1234-" + (5670 + i)); // Registrar
-                                                                   // acompañante
+                        // acompañante
                 }
 
                 // El cliente compra un vuelo privado de Aeroparque a Bariloche para 40 personas
-                String fechaVueloPrivado = "10/11/2024";
+                String fechaVueloPrivado = "10/11/2025";
                 double precioVueloPrivado = 500000.0;
 
                 // Vender el vuelo privado
-                String codVueloPrivado = aerolinea.VenderVueloPrivado("Aeroparque", "Bariloche", fechaVueloPrivado, 4,
+                String codVueloPrivado = aerolinea.VenderVueloPrivado("Aeroparque",
+                                "Bariloche", fechaVueloPrivado, 4,
                                 precioVueloPrivado, 98765432, acompaniantes);
 
-                // Detalle del vuelo privado
+                // // Detalle del vuelo privado
                 String detalleVueloPrivado = aerolinea.detalleDeVuelo(codVueloPrivado);
-                System.out.println("Detalle del vuelo privado (3 jets): " + detalleVueloPrivado);
+                System.out.println("Detalle del vuelo privado (3 jets): " +
+                                detalleVueloPrivado);
                 boolean error = false;
                 try {
-                        // Consultar asientos disponibles del vuelo privado debe generar un error.
+                        // // Consultar asientos disponibles del vuelo privado debe generar un error.
                         aerolinea.asientosDisponibles(codVueloPrivado);
                         error = true;
                 } catch (RuntimeException e) {
-                        // debería pasar por acá el codigo.
-                        // porque asientoDisponible debería lanzar una excepcion
+                        // // debería pasar por acá el codigo.
+                        // // porque asientoDisponible debería lanzar una excepcion
                 }
                 if (error)
                         throw new RuntimeException(
                                         "Consultar asientos disponibles del vuelo privado debe generar un error.");
 
                 // <<<<<<<< simulacion vuelo privado
+                double[] precios = { 15000.0, 30000.0, 50000.0 };
+                int[] cantAsientos = { 100, 30, 10 };
+                String[] escalas2 = { "JFK", "Charles de Gaulle" };
+                String codVuelo = aerolinea.registrarVueloPublicoInternacional("Ezeiza", "Bariloche", "15/12/2025", 8,
+                                2000, 3,
+                                precios, cantAsientos, escalas2);
+                System.out.println(aerolinea.asientosDisponibles(codVuelo));
+                for (int i = 1; i < 141; i++) {
+                        int dni = 100500000 + i; // Simplemente como ejemplo
+                        aerolinea.registrarCliente(dni, "Pasajero " + (i + 1), "011-1234-" + (5670 + i)); // Registrar
 
+                        aerolinea.venderPasaje(dni, codVuelo, i, false);
+                }
                 System.out.println(
                                 "Total recaudado en vuelos a 'Charles de Gaulle': "
                                                 + aerolinea.totalRecaudado("Charles de Gaulle"));
