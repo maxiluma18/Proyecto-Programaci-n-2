@@ -41,6 +41,14 @@ public class Aeropuerto {
         }
     }
 
+    public boolean esIgual(Aeropuerto otro) {
+        return this.nombre.equals(otro.getNombre()) && this.pais.equals(otro.getPais());
+    }
+
+    public boolean esNacional() {
+        return this.pais.equals("Argentina");
+    }
+
     // GETTERS
     public String getPais() {
         return pais;

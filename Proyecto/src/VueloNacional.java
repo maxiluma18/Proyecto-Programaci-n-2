@@ -1,5 +1,4 @@
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.management.RuntimeErrorException;
@@ -29,8 +28,7 @@ public class VueloNacional extends VueloPublico {
         }
         int codPasaje = codigoPasajeIncremental++;
         if (ocuparAsiento(dni, nroAsiento, codPasaje, aOcupar, codVuelo)) {
-            pasajeros.computeIfAbsent(dni, k -> new ArrayList<>()).add(nroAsiento);
-            double precioPasaje = calcularPrecioPasaje(determinarClase(nroAsiento)) * 1.2; // Ajuste de precio
+            double precioPasaje = calcularPrecioPasaje(determinarClase(nroAsiento)) * 1.2;
             actualizarRecaudacion(precioPasaje);
             return codPasaje;
         }
@@ -38,11 +36,11 @@ public class VueloNacional extends VueloPublico {
     }
 
     @Override
-    protected String determinarClase(int nroAsiento) {
-        // Determina la clase del asiento basado en el número de asiento
-        if (nroAsiento <= cantAsientos[0]) { // Asientos en clase Turista
+    public String determinarClase(int nroAsiento) {
+
+        if (nroAsiento <= cantAsientos[0]) {
             return "Turista";
-        } else if (nroAsiento <= (cantAsientos[0] + cantAsientos[1])) { // Asientos en clase Ejecutiva
+        } else if (nroAsiento <= (cantAsientos[0] + cantAsientos[1])) {
             return "Ejecutivo";
         } else {
             throw new IllegalArgumentException("Número de asiento fuera de rango o clase no válida.");
@@ -64,6 +62,13 @@ public class VueloNacional extends VueloPublico {
         } else {
             throw new RuntimeErrorException(null, "No existe el asiento");
         }
+    }
+
+    @Override
+    public boolean esSimilar(String origen, String destino, String fecha) {
+        return this.getOrigen().equals(origen) &&
+                this.getDestino().equals(destino) &&
+                this.fechaValida(fecha);
     }
 
     public void validacionRefrigerio(double refrigerio) {

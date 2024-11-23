@@ -1,6 +1,7 @@
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
@@ -20,6 +21,26 @@ public abstract class Vuelo {
         this.fecha = fecha;
         this.tripulantes = tripulantes;
     }
+
+    protected abstract Map<Integer, String> getAsientosDisponibles();
+
+    protected abstract int venderPasaje(int dni, int nroAsiento, boolean aOcupar, String codVuelo);
+
+    protected abstract String determinarClase(int nroAsiento);
+
+    protected abstract double getClaseSeccion(String clase);
+
+    protected abstract boolean esSimilar(String origen, String destino, String fecha);
+
+    protected abstract String getCodigo();
+
+    protected abstract void cancelarPasaje(int dni, int nroAsiento);
+
+    protected abstract int asignarAsiento(int dni, int nroAsiento, String clase, boolean ocupado);
+
+    protected abstract String getTipoVuelo();
+
+    protected abstract Pasaje getPasajePorCodigo(int codPasaje);
 
     public boolean fechaValida(String fecha) {
         DateTimeFormatter formatters = DateTimeFormatter.ofPattern("d/MM/uuuu");

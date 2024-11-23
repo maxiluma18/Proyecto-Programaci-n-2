@@ -50,7 +50,8 @@ public class Principal {
                                 "20/11/2025", 12, 6000, 3, preciosInternacional, cantAsientosInternacional, escalas);
 
                 // Vender pasajes
-                int codPasaje1 = aerolinea.venderPasaje(12345678, codVueloNacional, 5, true);
+                int codPasaje1 = aerolinea.venderPasaje(12345678, codVueloNacional, 5, false);
+                int codPasaje3 = aerolinea.venderPasaje(12345678, codVueloNacional, 4, true);
                 int codPasaje2 = aerolinea.venderPasaje(87654321, codVueloInternacional, 1, true);
 
                 // Mostrar estado del sistema

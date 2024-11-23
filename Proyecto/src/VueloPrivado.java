@@ -1,3 +1,4 @@
+import java.util.Map;
 
 public class VueloPrivado extends Vuelo {
     private double precio;
@@ -45,6 +46,46 @@ public class VueloPrivado extends Vuelo {
         if (origen == null || origen.isEmpty() || destino == null || destino.isEmpty()) {
             throw new RuntimeException("El origen y destino no pueden ser nulos o vacíos");
         }
+    }
+
+    @Override
+    public Map<Integer, String> getAsientosDisponibles() {
+        throw new RuntimeException("El vuelo no tiene acceso a los asientos");
+    }
+
+    @Override
+    public int venderPasaje(int dni, int nroAsiento, boolean aOcupar, String codVuelo) {
+        throw new RuntimeException("El vuelo no tiene acceso a los asientos");
+    }
+
+    @Override
+    public String determinarClase(int nroAsiento) {
+        throw new RuntimeException("El vuelo no tiene acceso a los asientos");
+    }
+
+    @Override
+    protected double getClaseSeccion(String clase) {
+        throw new RuntimeException("El vuelo no tiene acceso a los asientos");
+    }
+
+    @Override
+    protected boolean esSimilar(String origen, String destino, String fecha) {
+        throw new RuntimeException("El vuelo no tiene acceso a los asientos");
+    }
+
+    @Override
+    protected void cancelarPasaje(int dni, int nroAsiento) {
+        throw new RuntimeException("El vuelo no tiene acceso a los asientos");
+    }
+
+    @Override
+    protected int asignarAsiento(int dni, int nroAsiento, String clase, boolean ocupado) {
+        throw new RuntimeException("El vuelo no tiene acceso a los asientos");
+    }
+
+    @Override
+    protected Pasaje getPasajePorCodigo(int codPasaje) {
+        throw new RuntimeException("El vuelo no tiene acceso a los asientos");
     }
 
     // GETTERS

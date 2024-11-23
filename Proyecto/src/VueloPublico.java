@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.management.RuntimeErrorException;
-import javax.swing.text.html.HTMLDocument.Iterator;
 
 public abstract class VueloPublico extends Vuelo {
     protected static int codigoPasajeIncremental = 1;
@@ -69,17 +68,70 @@ public abstract class VueloPublico extends Vuelo {
         }
         int codPasaje = codigoPasajeIncremental++;
         if (ocuparAsiento(dni, nroAsiento, codPasaje, aOcupar, codVuelo)) {
-            double precioPasaje = calcularPrecioPasaje(determinarClase(nroAsiento)) * 1.5; // Ajuste de precio
+            double precioPasaje = calcularPrecioPasaje(determinarClase(nroAsiento)) * 1.2;
             actualizarRecaudacion(precioPasaje);
             return codPasaje;
         }
         return 0;
     }
 
+    public List<String> reprogramarPasajeros(Vuelo nuevoVuelo, Map<Integer, Pasaje> pasajerosVuelo,
+            Map<Integer, Cliente> clientes,
+            Map<String, Double> recaudacionPorDestino) {
+        List<String> listaPasajerosReprogramados = new ArrayList<>();
+        boolean encontroVueloValido = false;
+
+        if (nuevoVuelo.getOrigen().equals(this.getOrigen()) &&
+                nuevoVuelo.getDestino().equals(this.getDestino()) &&
+                nuevoVuelo.fechaValida(this.getFecha())) {
+
+            encontroVueloValido = true;
+
+            for (Pasaje p : pasajerosVuelo.values()) {
+                String telefonoCliente = clientes.get(p.getDni()).getTelefono();
+                String nombreCliente = clientes.get(p.getDni()).getNombre();
+                String codVueloNuevo = nuevoVuelo.getCodigo();
+                int nroAsiento = p.getNroAsiento();
+
+                if (nuevoVuelo.asignarAsiento(p.getDni(), nroAsiento, p.getClase(), p.getOcupado()) > 0) {
+                    String clase = nuevoVuelo.determinarClase(nroAsiento);
+                    double precioPasaje = nuevoVuelo.getClaseSeccion(clase);
+                    recaudacionPorDestino.put(nuevoVuelo.getDestino(),
+                            recaudacionPorDestino.getOrDefault(nuevoVuelo.getDestino(), 0.0) + precioPasaje);
+                    agregarPasajero(listaPasajerosReprogramados,
+                            p.getDni(),
+                            nombreCliente,
+                            telefonoCliente,
+                            codVueloNuevo);
+                } else {
+                    agregarPasajero(listaPasajerosReprogramados,
+                            p.getDni(),
+                            nombreCliente,
+                            telefonoCliente,
+                            "CANCELADO");
+                }
+            }
+        }
+
+        if (!encontroVueloValido) {
+            for (Pasaje p : pasajerosVuelo.values()) {
+                String telefonoCliente = clientes.get(p.getDni()).getTelefono();
+                String nombreCliente = clientes.get(p.getDni()).getNombre();
+                agregarPasajero(listaPasajerosReprogramados,
+                        p.getDni(),
+                        nombreCliente,
+                        telefonoCliente,
+                        "CANCELADO");
+            }
+        }
+
+        return listaPasajerosReprogramados;
+    }
+
     protected boolean ocuparAsiento(int dni, int nroAsiento, int codPasaje, boolean aOcupar, String codVuelo) {
-        if (asientos.containsKey(nroAsiento) && asientos.get(nroAsiento) == null) { // disponible
+        if (asientos.containsKey(nroAsiento) && asientos.get(nroAsiento) == null) {
             Pasaje nuevoPasaje = new Pasaje(dni, nroAsiento, determinarClase(nroAsiento), aOcupar, codVuelo, codPasaje);
-            asientos.put(nroAsiento, nuevoPasaje); // Asignamos el pasaje al asiento
+            asientos.put(nroAsiento, nuevoPasaje);
             pasajeros.computeIfAbsent(dni, k -> new ArrayList<>()).add(nroAsiento);
             return true;
         }
@@ -88,6 +140,15 @@ public abstract class VueloPublico extends Vuelo {
 
     public boolean tienePasaje(int dni) {
         return pasajeros.containsKey(dni);
+    }
+
+    public Pasaje getPasajePorCodigo(int codPasaje) {
+        for (Pasaje pasaje : asientos.values()) {
+            if (pasaje != null && pasaje.getCodPasaje() == codPasaje) {
+                return pasaje;
+            }
+        }
+        return null;
     }
 
     public void cancelarPasaje(int dni, int nroAsiento) {
@@ -138,10 +199,10 @@ public abstract class VueloPublico extends Vuelo {
     protected int encontrarAsientoDisponible(String clase) {
         for (Map.Entry<Integer, Pasaje> entry : asientos.entrySet()) {
             if (entry.getValue() == null && determinarClase(entry.getKey()).equals(clase)) {
-                return entry.getKey(); // Retorna el primer asiento disponible en la clase especificada
+                return entry.getKey();
             }
         }
-        return -1; // Si no se encuentra un asiento disponible
+        return -1;
     }
 
     public Map<Integer, String> getAsientosDisponibles() {
@@ -155,14 +216,23 @@ public abstract class VueloPublico extends Vuelo {
     }
 
     protected boolean estaOcupado(int nroAsiento) {
-        return asientos.containsKey(nroAsiento) && asientos.get(nroAsiento) != null; // Retorna true si el asiento está
-                                                                                     // ocupado
+        return asientos.containsKey(nroAsiento) && asientos.get(nroAsiento) != null;
     }
 
     public void validacionOrigenDestinoNacional(String origen, String destino) {
         if (origen == null || origen.isEmpty() || destino == null || destino.isEmpty()) {
             throw new RuntimeException("El origen y destino no pueden ser nulos o vacíos");
         }
+    }
+
+    public void agregarPasajero(List<String> lista, int dni, String nombre,
+            String telefono, String codVuelo) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dni).append(" - ")
+                .append(nombre).append(" - ")
+                .append(telefono).append(" - ")
+                .append(codVuelo);
+        lista.add(sb.toString());
     }
 
     // GETTERS
@@ -189,15 +259,16 @@ public abstract class VueloPublico extends Vuelo {
         return codigo;
     }
 
-    protected String determinarClase(int nroAsiento) {
-        // Verifica si el número de asiento es válido
+    @Override
+    public String determinarClase(int nroAsiento) {
+
         if (nroAsiento <= 0 || nroAsiento > totalAsientos) {
             throw new IllegalArgumentException("Número de asiento inválido.");
         }
-        // Determina la clase del asiento basado en el número de asiento
-        if (nroAsiento <= cantAsientos[0]) { // Asientos en clase Turista
+
+        if (nroAsiento <= cantAsientos[0]) {
             return "Turista";
-        } else if (nroAsiento <= (cantAsientos[0] + cantAsientos[1])) { // Asientos en clase Ejecutiva
+        } else if (nroAsiento <= (cantAsientos[0] + cantAsientos[1])) {
             return "Ejecutivo";
         } else {
             throw new IllegalArgumentException("Número de asiento fuera de rango.");

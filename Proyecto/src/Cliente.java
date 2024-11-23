@@ -4,7 +4,6 @@ public class Cliente {
     private int dni;
     private String nombre;
     private String telefono;
-    private Boolean esPasajero = false;
 
     public Cliente(int dni, String nombre, String telefono) {
         validacionDni(dni);
@@ -13,14 +12,6 @@ public class Cliente {
         this.dni = dni;
         this.nombre = nombre;
         this.telefono = telefono;
-    }
-
-    public boolean esPasajero() {
-        return this.esPasajero;
-    }
-
-    public void cambiarEstado(boolean pasajero) {
-        this.esPasajero = pasajero;
     }
 
     public void validacionDni(int dni) {
