@@ -129,6 +129,9 @@ public class Principal {
                 String codVuelo = aerolinea.registrarVueloPublicoInternacional("Ezeiza", "Bariloche", "15/12/2025", 8,
                                 2000, 3,
                                 precios, cantAsientos, escalas2);
+                String codVuelo2 = aerolinea.registrarVueloPublicoInternacional("Ezeiza", "Bariloche", "15/12/2025", 8,
+                                2000, 3,
+                                precios, cantAsientos, escalas2);
                 System.out.println(aerolinea.asientosDisponibles(codVuelo));
                 for (int i = 1; i < 141; i++) {
                         int dni = 100500000 + i; // Simplemente como ejemplo

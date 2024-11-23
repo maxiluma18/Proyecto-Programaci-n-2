@@ -118,7 +118,6 @@ public class Aerolinea implements IAerolinea {
         String codigoVuelo = nuevoVuelo.getCodigo();
         Vuelos.put(codigoVuelo, nuevoVuelo);
         return codigoVuelo;
-
     }
 
     // Funcion 7
@@ -182,7 +181,6 @@ public class Aerolinea implements IAerolinea {
         if (cl == null) {
             throw new RuntimeException("El cliente no está registrado");
         }
-
         for (Vuelo vuelo : Vuelos.values()) {
             Pasaje pasaje = vuelo.getPasajePorCodigo(codPasaje);
             if (pasaje != null && pasaje.getDni() == dni) {
@@ -210,11 +208,13 @@ public class Aerolinea implements IAerolinea {
         }
         VueloPublico vueloPublico = (VueloPublico) vuelo;
         Map<Integer, Pasaje> pasajerosVuelo = new HashMap<>(vueloPublico.getAsientos());
+        // Realizar la reprogramación de pasajeros
         if (pasajerosVuelo.size() > 0) {
             Iterator<Vuelo> iterator = Vuelos.values().iterator();
             while (iterator.hasNext()) {
                 Vuelo v = iterator.next();
                 if (v != vueloPublico) {
+
                     listaPasajerosReprogramados.addAll(
                             vueloPublico.reprogramarPasajeros(v, pasajerosVuelo, clientes, recaudacionPorDestino));
                 }
@@ -231,11 +231,9 @@ public class Aerolinea implements IAerolinea {
 
     // Funcion 14
     public double totalRecaudado(String destino) {
-
         if (recaudacionPorDestino.get(destino) == null) {
             return 0.0;
         }
-
         double valor = recaudacionPorDestino.get(destino);
         return valor;
     }
@@ -249,7 +247,6 @@ public class Aerolinea implements IAerolinea {
         if (v == null) {
             throw new RuntimeException("El vuelo no existe");
         }
-
         return crearSBVuelo(codVuelo, v.getOrigen(), v.getDestino(), v.getFecha(), v.getTipoVuelo());
     }
 
