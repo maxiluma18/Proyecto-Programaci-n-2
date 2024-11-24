@@ -1,8 +1,7 @@
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
@@ -58,6 +57,10 @@ public class VueloInternacional extends VueloPublico {
 
     @Override
     public String determinarClase(int nroAsiento) {
+        if (nroAsiento <= 0 || nroAsiento > totalAsientos) {
+            throw new IllegalArgumentException("Número de asiento inválido.");
+        }
+
         if (nroAsiento <= cantAsientos[0]) {
             return "Turista";
         } else if (nroAsiento <= (cantAsientos[0] + cantAsientos[1])) {
@@ -69,45 +72,14 @@ public class VueloInternacional extends VueloPublico {
         }
     }
 
-    @Override
-    public Map<Integer, String> getAsientosDisponibles() {
-        Map<Integer, String> asientosDisponibles = new HashMap<>();
-        for (Map.Entry<Integer, Pasaje> entry : asientos.entrySet()) {
-            if (entry.getValue() == null) {
-                asientosDisponibles.put(entry.getKey(), determinarClase(entry.getKey()));
-            }
-        }
-        return asientosDisponibles;
-    }
-
-    @Override
     protected boolean ocuparAsiento(int dni, int nroAsiento, int codPasaje, boolean aOcupar, String codVuelo) {
         if (asientos.containsKey(nroAsiento) && asientos.get(nroAsiento) == null) {
             Pasaje nuevoPasaje = new Pasaje(dni, nroAsiento, determinarClase(nroAsiento), aOcupar, codVuelo, codPasaje);
             asientos.put(nroAsiento, nuevoPasaje);
-            pasajeros.computeIfAbsent(dni, k -> new ArrayList<>()).add(nroAsiento);
-
+            pasajeros.computeIfAbsent(dni, k -> new HashSet<>()).add(nroAsiento); // Cambiado a HashSet
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void cancelarPasaje(int dni, int nroAsiento) {
-        List<Integer> asientosOcupados = pasajeros.get(dni);
-        if (asientos.containsKey(nroAsiento) && asientos.get(nroAsiento) != null) {
-            asientos.put(nroAsiento, null);
-            double precioPasaje = calcularPrecioPasaje(determinarClase(nroAsiento)) * 1.2;
-            actualizarRecaudacion(-precioPasaje);
-            asientosOcupados.remove(Integer.valueOf(nroAsiento));
-            if (asientosOcupados.isEmpty()) {
-                pasajeros.remove(dni);
-            } else {
-                pasajeros.put(dni, asientosOcupados);
-            }
-        } else {
-            throw new RuntimeErrorException(null, "No existe el asiento");
-        }
     }
 
     @Override
@@ -141,13 +113,6 @@ public class VueloInternacional extends VueloPublico {
         }
 
         return -1;
-    }
-
-    @Override
-    public boolean esSimilar(String origen, String destino, String fecha) {
-        return this.getOrigen().equals(origen) &&
-                this.getDestino().equals(destino) &&
-                this.fechaValida(fecha);
     }
 
     // GETTERS

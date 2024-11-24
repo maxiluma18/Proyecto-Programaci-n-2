@@ -208,7 +208,6 @@ public class Aerolinea implements IAerolinea {
         }
         VueloPublico vueloPublico = (VueloPublico) vuelo;
         Map<Integer, Pasaje> pasajerosVuelo = new HashMap<>(vueloPublico.getAsientos());
-        // Realizar la reprogramación de pasajeros
         if (pasajerosVuelo.size() > 0) {
             Iterator<Vuelo> iterator = Vuelos.values().iterator();
             while (iterator.hasNext()) {
@@ -251,15 +250,6 @@ public class Aerolinea implements IAerolinea {
     }
 
     // *Funciones Auxiliares---------------------
-    public void agregarPasajero(List<String> lista, int dni, String nombre,
-            String telefono, String codVuelo) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(dni).append(" - ")
-                .append(nombre).append(" - ")
-                .append(telefono).append(" - ")
-                .append(codVuelo);
-        lista.add(sb.toString());
-    }
 
     public String crearSBVuelo(String codVuelo, String origen, String destino, String fecha, String tipoDeVuelo) {
         StringBuilder sb = new StringBuilder();

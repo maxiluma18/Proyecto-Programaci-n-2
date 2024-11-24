@@ -1,7 +1,9 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.management.RuntimeErrorException;
 
@@ -10,7 +12,7 @@ public abstract class VueloPublico extends Vuelo {
     protected Map<Integer, Pasaje> asientos;
     protected int totalAsientos;
     protected int[] cantAsientos;
-    protected Map<Integer, List<Integer>> pasajeros;
+    protected Map<Integer, Set<Integer>> pasajeros;
     protected double[] precios;
     protected double valorRefrigerio;
     private double recaudacionTotal;
@@ -56,6 +58,7 @@ public abstract class VueloPublico extends Vuelo {
         return String.valueOf(contadorVuelos);
     }
 
+    @Override
     public int venderPasaje(int dni, int nroAsiento, boolean aOcupar, String codVuelo) {
         if (nroAsiento <= 0 || nroAsiento > totalAsientos) {
             return 0;
@@ -128,11 +131,18 @@ public abstract class VueloPublico extends Vuelo {
         return listaPasajerosReprogramados;
     }
 
+    @Override
+    public boolean esSimilar(String origen, String destino, String fecha) {
+        return this.getOrigen().equals(origen) &&
+                this.getDestino().equals(destino) &&
+                this.fechaValida(fecha);
+    }
+
     protected boolean ocuparAsiento(int dni, int nroAsiento, int codPasaje, boolean aOcupar, String codVuelo) {
         if (asientos.containsKey(nroAsiento) && asientos.get(nroAsiento) == null) {
             Pasaje nuevoPasaje = new Pasaje(dni, nroAsiento, determinarClase(nroAsiento), aOcupar, codVuelo, codPasaje);
             asientos.put(nroAsiento, nuevoPasaje);
-            pasajeros.computeIfAbsent(dni, k -> new ArrayList<>()).add(nroAsiento);
+            pasajeros.computeIfAbsent(dni, k -> new HashSet<>()).add(nroAsiento); // Cambiado a HashSet
             return true;
         }
         return false;
@@ -142,6 +152,7 @@ public abstract class VueloPublico extends Vuelo {
         return pasajeros.containsKey(dni);
     }
 
+    @Override
     public Pasaje getPasajePorCodigo(int codPasaje) {
         for (Pasaje pasaje : asientos.values()) {
             if (pasaje != null && pasaje.getCodPasaje() == codPasaje) {
@@ -151,21 +162,22 @@ public abstract class VueloPublico extends Vuelo {
         return null;
     }
 
+    @Override
     public void cancelarPasaje(int dni, int nroAsiento) {
-        List<Integer> asientosOcupados = pasajeros.get(dni);
+        Set<Integer> asientosOcupados = pasajeros.get(dni);
         if (asientos.containsKey(nroAsiento) && asientos.get(nroAsiento) != null) {
             asientos.put(nroAsiento, null);
-            asientosOcupados.remove(Integer.valueOf(nroAsiento));
+            asientosOcupados.remove(nroAsiento);
+
             if (asientosOcupados.isEmpty()) {
                 pasajeros.remove(dni);
-            } else {
-                pasajeros.put(dni, asientosOcupados);
             }
         } else {
             throw new RuntimeErrorException(null, "No existe el asiento");
         }
     }
 
+    @Override
     public int asignarAsiento(int dni, int nroAsiento, String clase, boolean ocupado) {
         int codPasaje = codigoPasajeIncremental++;
         String codVuelo = this.getCodigo();
@@ -205,6 +217,7 @@ public abstract class VueloPublico extends Vuelo {
         return -1;
     }
 
+    @Override
     public Map<Integer, String> getAsientosDisponibles() {
         Map<Integer, String> asientosDisponibles = new HashMap<>();
         for (Map.Entry<Integer, Pasaje> entry : asientos.entrySet()) {
@@ -236,7 +249,7 @@ public abstract class VueloPublico extends Vuelo {
     }
 
     // GETTERS
-    public Map<Integer, List<Integer>> getPasajeros() {
+    public Map<Integer, Set<Integer>> getPasajeros() {
         return pasajeros;
     }
 
@@ -255,13 +268,13 @@ public abstract class VueloPublico extends Vuelo {
 
     }
 
+    @Override
     public String getCodigo() {
         return codigo;
     }
 
     @Override
     public String determinarClase(int nroAsiento) {
-
         if (nroAsiento <= 0 || nroAsiento > totalAsientos) {
             throw new IllegalArgumentException("Número de asiento inválido.");
         }
@@ -275,14 +288,17 @@ public abstract class VueloPublico extends Vuelo {
         }
     }
 
+    @Override
     protected double getClaseSeccion(String clase) {
         double cantRefrigerio = valorRefrigerio;
         if (clase.equals("Turista")) {
             double cant = precios[0] + cantRefrigerio;
             return cant * 1.2;
-        } else {
+        } else if (clase.equals("Ejecutivo")) {
             double cant = precios[1] + cantRefrigerio;
             return cant * 1.2;
+        } else {
+            throw new IllegalArgumentException("Clase inexistente");
         }
     }
 
