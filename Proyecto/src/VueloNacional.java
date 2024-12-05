@@ -9,8 +9,9 @@ public class VueloNacional extends VueloPublico {
         this.precios = precios;
     }
 
-    public String getTipoVuelo() {
-        return "NACIONAL";
+    @Override
+    public String detalle(String codVuelo) {
+        return super.detalle(codVuelo) + "-" + "NACIONAL";
     }
 
     public void validacionRefrigerio(double refrigerio) {

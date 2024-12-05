@@ -88,6 +88,11 @@ public class VueloPrivado extends Vuelo {
         throw new RuntimeException("El vuelo no tiene acceso a los asientos");
     }
 
+    @Override
+    public String detalle(String codVuelo) {
+        return super.detalle(codVuelo) + "-" + "PRIVADO" + " (" + cantJets + ")";
+    }
+
     // GETTERS
     public String getCodigo() {
         return codigo;
@@ -111,10 +116,6 @@ public class VueloPrivado extends Vuelo {
 
     public int getCantJets() {
         return cantJets;
-    }
-
-    public String getTipoVuelo() {
-        return "PRIVADO" + " (" + cantJets + ")";
     }
 
 }

@@ -38,9 +38,11 @@ public abstract class Vuelo {
 
     protected abstract int asignarAsiento(int dni, int nroAsiento, String clase, boolean ocupado);
 
-    protected abstract String getTipoVuelo();
-
     protected abstract Pasaje getPasajePorCodigo(int codPasaje);
+
+    public String detalle(String codVuelo) {
+        return codVuelo + "-" + origen + "-" + destino + "-" + fecha;
+    }
 
     public boolean fechaValida(String fecha) {
         DateTimeFormatter formatters = DateTimeFormatter.ofPattern("d/MM/uuuu");

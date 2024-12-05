@@ -230,7 +230,7 @@ public class Aerolinea implements IAerolinea {
 
     // Funcion 14
     public double totalRecaudado(String destino) {
-        if (recaudacionPorDestino.get(destino) == null) {
+        if (!recaudacionPorDestino.containsKey(destino)) {
             return 0.0;
         }
         double valor = recaudacionPorDestino.get(destino);
@@ -239,6 +239,11 @@ public class Aerolinea implements IAerolinea {
 
     // Funcion 15
     public String detalleDeVuelo(String codVuelo) {
+        Vuelo v = buscarVuelo(codVuelo);
+        return v.detalle(codVuelo);
+    }
+
+    private Vuelo buscarVuelo(String codVuelo) {
         if (codVuelo == null || codVuelo.isEmpty()) {
             throw new RuntimeErrorException(null, "codVuelo no puede ser nulo o vacio");
         }
@@ -246,18 +251,10 @@ public class Aerolinea implements IAerolinea {
         if (v == null) {
             throw new RuntimeException("El vuelo no existe");
         }
-        return crearSBVuelo(codVuelo, v.getOrigen(), v.getDestino(), v.getFecha(), v.getTipoVuelo());
+        return v;
     }
 
     // *Funciones Auxiliares---------------------
-
-    public String crearSBVuelo(String codVuelo, String origen, String destino, String fecha, String tipoDeVuelo) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(codVuelo).append(" - ").append(origen).append(" - ").append(destino).append(" - ").append(fecha)
-                .append(" - ").append(tipoDeVuelo);
-        return sb.toString();
-    }
-
     public boolean fechaValida(String fecha) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/uuuu");
         LocalDate fechaVuelo = LocalDate.parse(fecha, formatter);
