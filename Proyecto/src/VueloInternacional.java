@@ -115,13 +115,14 @@ public class VueloInternacional extends VueloPublico {
         return -1;
     }
 
+    @Override
+    public String detalle(String codVuelo) {
+        return super.detalle(codVuelo) + "-" + "INTERNACIONAL";
+    }
+
     // GETTERS
     public String[] getEscalas() {
         return this.escalas;
-    }
-
-    public String getTipoVuelo() {
-        return "INTERNACIONAL";
     }
 
     @Override
